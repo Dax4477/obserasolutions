@@ -44,7 +44,6 @@
                             <span class="text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded">17h Active</span>
                         </div>
                     </label>
-                    
                     <label class="flex items-center p-3 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:bg-white/10 transition-all">
                         <input type="checkbox" name="node" value="Medical College" class="mr-3 accent-sky-400" onchange="calculate()">
                         <div class="flex justify-between w-full items-center">
@@ -108,10 +107,10 @@
                     <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
                     <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">1</span></div>
                     
-                    //<div class="flex justify-between pt-2 border-t border-white/5">
-                        //<span class="text-slate-400">Est. Cost:</span>
-                       // <span class="text-green-400 font-bold font-mono" id="res-cost">₹0</span>
-                   // </div>
+                    <div class="hidden flex justify-between pt-2 border-t border-white/5">
+                        <span class="text-slate-400">Est. Cost:</span>
+                        <span class="text-green-400 font-bold font-mono" id="res-cost">₹0</span>
+                    </div>
                 </div>
             </div>
 
@@ -245,7 +244,7 @@
             msg += `*Format:* ${type} (${duration})\n`;
             msg += `*Duration:* ${days}\n\n`;
             msg += `*Locations & Plays:*\n${locsDetails}\n`;
-            msg += `*Total Cost: ${cost}*\n\n`;
+            //msg += `*Total Cost: ${cost}*\n\n`;
             msg += `I would like to proceed with this plan.`;
 
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
