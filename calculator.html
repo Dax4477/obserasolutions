@@ -105,7 +105,7 @@
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between"><span class="text-slate-400">Format:</span><span id="res-format" class="text-white font-mono">Video</span></div>
                     <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">1</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">0</span></div>
                     
                     <div class="hidden flex justify-between pt-2 border-t border-white/5">
                         <span class="text-slate-400">Est. Cost:</span>
@@ -170,7 +170,7 @@
             // --- Cost Calculation ---
             // Formula: (Base / 30s) * Duration * Days * Locations * TypeMultiplier
             const typeMultiplier = isVideo ? 1 : 0.5;
-            const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
+            const cost = Math.round((BASE_RATE / 300) * duration * days * nodeCount * typeMultiplier);
             
             // --- Playcount Calculation (Per Screen) ---
             const loopsPerHour = Math.floor(3600 / duration);
