@@ -130,8 +130,8 @@
         </div>
     </div>
 
-<script>
-        const BASE_RATE = 99; // Base price logic remains the same
+    <script>
+        const BASE_RATE = 99; // Base price for 30s per day
         const WHATSAPP_NUM = '919562551376';
         
         // Define Active Hours per location
@@ -157,7 +157,7 @@
             const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
             const nodeCount = selectedNodes.length;
             const isVideo = document.querySelector('input[name="ad-type"]:checked').value === 'video';
-            const duration = parseInt(document.getElementById('duration').value);
+            const duration = parseInt(document.getElementById('duration').value); // Duration affects play count
             
             const daySelect = document.getElementById('days');
             let days = 0;
@@ -167,13 +167,14 @@
                 days = parseInt(daySelect.value);
             }
 
-            // --- 2. Cost Calculation (Still depends on Ad Duration) ---
+            // --- 2. Cost Calculation ---
             const typeMultiplier = isVideo ? 1 : 0.5;
             const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
             
-            // --- 3. Playcount Calculation (FIXED 5-MIN LOOP) ---
-            // 60 mins / 5 min loop = 12 plays per hour (Fixed)
-            const loopsPerHour = 12; 
+            // --- 3. Playcount Calculation (DYNAMIC BASED ON DURATION) ---
+            // 3600 seconds in an hour. 
+            // 10s video = 360 plays/hr. 30s video = 120 plays/hr.
+            const loopsPerHour = Math.floor(3600 / duration);
             
             let totalPlays = 0;
             let breakdownHTML = '';
@@ -182,7 +183,7 @@
                 selectedNodes.forEach(node => {
                     const locData = LOCATIONS_DATA[node.value];
                     if (locData) {
-                        // Plays = 12 * Active Hours * Days
+                        // Plays = Loops/Hr * Active Hours * Days
                         const screenPlays = loopsPerHour * locData.hours * days;
                         totalPlays += screenPlays;
                         
@@ -224,14 +225,14 @@
         function sendWhatsApp() {
             const cost = document.getElementById('res-cost').textContent;
             const days = document.getElementById('day-val').textContent;
-            const duration = document.getElementById('dur-val').textContent;
+            const duration = parseInt(document.getElementById('duration').value); // Get duration directly for math
             const type = document.getElementById('res-format').textContent;
             
             let locsDetails = '';
             const selectedNodes = document.querySelectorAll('input[name="node"]:checked');
             
-            // Fixed Loop for WhatsApp Message
-            const loopsPerHour = 12; 
+            // Dynamic Loops per Hour for message
+            const loopsPerHour = Math.floor(3600 / duration); 
 
             selectedNodes.forEach(node => {
                 const locData = LOCATIONS_DATA[node.value];
@@ -244,11 +245,12 @@
                 locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
             });
 
-            let msg = `*New Booking Inquiry (5-min Loop)*\n\n`;
-            msg += `*Format:* ${type} (${duration})\n`;
+            let msg = `*New Booking Inquiry*\n\n`;
+            msg += `*Format:* ${type} (${duration}s)\n`;
             msg += `*Duration:* ${days}\n\n`;
             msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
-            //msg += `*Total Cost: ${cost}*\n\n`;
+            // Cost is hidden in UI but can be included if desired
+            // msg += `*Total Cost: ${cost}*\n\n`; 
             msg += `I would like to proceed with this plan.`;
 
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
