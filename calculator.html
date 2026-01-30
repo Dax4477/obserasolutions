@@ -152,7 +152,7 @@
             calculate();
         }
 
-        function calculate() {
+function calculate() {
             // Inputs
             const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
             const nodeCount = selectedNodes.length;
@@ -168,12 +168,14 @@
             }
 
             // --- Cost Calculation ---
-            // Formula: (Base / 30s) * Duration * Days * Locations * TypeMultiplier
+            // Price still depends on Duration (Longer ad = Higher Price)
             const typeMultiplier = isVideo ? 1 : 0.5;
             const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
             
-            // --- Playcount Calculation (Per Screen) ---
-            const loopsPerHour = Math.floor(3600 / duration);
+            // --- Playcount Calculation (FIXED 5 MIN PLAYLIST) ---
+            // 60 mins / 5 min playlist = 12 loops per hour
+            const loopsPerHour = 12; 
+            
             let totalPlays = 0;
             let breakdownHTML = '';
 
