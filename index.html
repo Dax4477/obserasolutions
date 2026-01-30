@@ -50,11 +50,15 @@
 
     <style>
         body { background-color: #0f172a; color: white; }
+        
+        /* Glass Effect */
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        /* Grid Background */
         .bg-grid {
             background-size: 40px 40px;
             background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
@@ -62,6 +66,8 @@
             mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
             -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
         }
+
+        /* Animated Text Gradient */
         .text-gradient-animate {
             background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc, #38bdf8);
             background-size: 200% auto;
@@ -70,17 +76,31 @@
             background-clip: text;
             animation: gradientMove 3s linear infinite;
         }
+        
         @keyframes gradientMove {
             0% { background-position: 0% 50%; }
             100% { background-position: 200% 50%; }
         }
+
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* Animations */
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Page Transitions */
         .page-section { display: none; }
         .page-section.active { display: block; }
+        
+        /* Blog Content Styling */
+        .prose p { margin-bottom: 1.5rem; line-height: 1.8; color: #94a3b8; }
+        .prose strong { color: #fff; font-weight: 600; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; color: #94a3b8; }
+        .prose li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body class="overflow-x-hidden min-h-screen flex flex-col justify-between relative">
@@ -90,6 +110,7 @@
         <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div class="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div class="absolute -bottom-8 left-20 w-72 h-72 bg-brand-accent rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-brand-accent/5 rounded-full blur-[100px]"></div>
     </div>
 
     <nav class="fixed w-full z-50 glass-panel border-b border-white/5">
@@ -109,6 +130,7 @@
                     Platforms <span class="bg-purple-500/20 text-xs px-1.5 py-0.5 rounded border border-purple-500/30">New</span>
                 </a>
                 <a href="javascript:void(0)" onclick="navigateTo('about')" class="hover:text-white transition-colors nav-item" data-target="about">About</a>
+                <a href="javascript:void(0)" onclick="navigateTo('blog')" class="hover:text-white transition-colors nav-item" data-target="blog">Blog</a>
                 <a href="javascript:void(0)" onclick="navigateTo('contact')" class="hover:text-white transition-colors nav-item" data-target="contact">Contact</a>
             </div>
 
@@ -126,7 +148,9 @@
             <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Pricing</a>
             <a href="javascript:void(0)" onclick="navigateTo('platforms')" class="block py-3 px-2 text-purple-400 hover:text-white border-b border-white/5 font-bold">Platforms</a>
             <a href="javascript:void(0)" onclick="navigateTo('about')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">About</a>
+            <a href="javascript:void(0)" onclick="navigateTo('blog')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Blog</a>
             <a href="javascript:void(0)" onclick="navigateTo('contact')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Contact</a>
+            <a href="javascript:void(0)" onclick="navigateTo('terms')" class="block py-3 px-2 text-slate-400 hover:text-white">Terms</a>
         </div>
     </nav>
 
@@ -145,146 +169,623 @@
                         High-impact digital screens in high-traffic zones. Cut through the noise and dominate the visual space with Obsera Solutions.
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <button onclick="navigateTo('pricing')" class="px-8 py-4 rounded-lg bg-brand-accent hover:bg-brand-glow text-slate-900 font-bold shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all transform hover:-translate-y-1">
+                        <button onclick="navigateTo('pricing')" class="px-8 py-4 rounded-lg bg-brand-accent hover:bg-brand-glow text-slate-900 font-bold shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] transition-all transform hover:-translate-y-1">
                             Calculate Price
                         </button>
-                        <button onclick="navigateTo('about')" class="px-8 py-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold transition-all">
+                        <button onclick="navigateTo('about')" class="px-8 py-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold transition-all backdrop-blur-sm">
                             Learn More
                         </button>
                     </div>
                 </div>
             </section>
-            
-            <section class="py-24 container mx-auto px-6 border-t border-white/5">
-                 <div class="grid md:grid-cols-3 gap-8 text-center">
-                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
-                        <div class="text-4xl mb-4">📍</div>
-                        <h3 class="font-bold text-white text-xl mb-2">Prime Locations</h3>
-                        <p class="text-slate-400 text-sm">Strategically placed screens in high-dwell time areas.</p>
+
+            <div class="border-y border-white/5 bg-black/20 py-8 overflow-hidden relative">
+                <div class="flex whitespace-nowrap animate-scroll">
+                    <div class="flex items-center gap-16 mx-8 text-slate-500 font-display font-bold text-xl uppercase tracking-widest">
+                        <span>Retail</span>
+                        <span>Dining</span>
+                        <span>Events</span>
+                        <span>Healthcare</span>
+                        <span>Real Estate</span>
+                        <span>Education</span>
+                        <span>Automotive</span>
                     </div>
-                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
-                        <div class="text-4xl mb-4">🚀</div>
-                        <h3 class="font-bold text-white text-xl mb-2">Instant Go-Live</h3>
-                        <p class="text-slate-400 text-sm">Upload your creative and see it live within minutes.</p>
+                    <div class="flex items-center gap-16 mx-8 text-slate-500 font-display font-bold text-xl uppercase tracking-widest">
+                        <span>Retail</span>
+                        <span>Dining</span>
+                        <span>Events</span>
+                        <span>Healthcare</span>
+                        <span>Real Estate</span>
+                        <span>Education</span>
+                        <span>Automotive</span>
                     </div>
-                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
-                        <div class="text-4xl mb-4">💰</div>
-                        <h3 class="font-bold text-white text-xl mb-2">Cost Effective</h3>
-                        <p class="text-slate-400 text-sm">No printing costs. No installation fees. Just results.</p>
+                </div>
+                <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-brand-dark to-transparent z-10"></div>
+                <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-brand-dark to-transparent z-10"></div>
+            </div>
+
+            <section class="py-24 container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-display font-bold mb-4 text-white">Three Steps to Visibility</h2>
+                    <p class="text-slate-400 max-w-xl mx-auto">Launching a campaign has never been easier. We handle the tech, you handle the message.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 relative">
+                    <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-brand-accent/30 to-transparent z-0"></div>
+                    
+                    <div class="relative z-10 text-center group">
+                        <div class="w-24 h-24 mx-auto bg-brand-panel border border-brand-accent/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-lg shadow-brand-accent/5 group-hover:scale-110 group-hover:border-brand-accent/50 transition-all duration-300">📍</div>
+                        <h3 class="text-xl font-bold text-white mb-2">1. Select Spot</h3>
+                        <p class="text-slate-400 text-sm px-4">Choose from our network of high-traffic screens.</p>
                     </div>
-                 </div>
+                    <div class="relative z-10 text-center group">
+                        <div class="w-24 h-24 mx-auto bg-brand-panel border border-brand-accent/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-lg shadow-brand-accent/5 group-hover:scale-110 group-hover:border-brand-accent/50 transition-all duration-300">⚡️</div>
+                        <h3 class="text-xl font-bold text-white mb-2">2. Configure</h3>
+                        <p class="text-slate-400 text-sm px-4">Set your duration and campaign length instantly.</p>
+                    </div>
+                    <div class="relative z-10 text-center group">
+                        <div class="w-24 h-24 mx-auto bg-brand-panel border border-brand-accent/20 rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-lg shadow-brand-accent/5 group-hover:scale-110 group-hover:border-brand-accent/50 transition-all duration-300">🚀</div>
+                        <h3 class="text-xl font-bold text-white mb-2">3. Go Live</h3>
+                        <p class="text-slate-400 text-sm px-4">Your ad plays to thousands of local customers.</p>
+                    </div>
+                </div>
+            </section>
+
+             <section class="py-24 bg-black/20 border-y border-white/5 relative z-10 backdrop-blur-sm">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl font-display font-bold mb-4 text-white">The Power of Digital</h2>
+                        <p class="text-slate-400 max-w-2xl mx-auto">Why brands are switching from static print to dynamic digital screens.</p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="p-8 rounded-2xl bg-brand-panel/60 border border-white/5 hover:border-brand-accent/50 hover:bg-brand-panel/80 transition-all group hover:shadow-[0_0_25px_rgba(56,189,248,0.15)] duration-300">
+                            <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform group-hover:text-blue-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-blue-200">400% More Views</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Motion graphics capture attention far more effectively than static banners. Be seen, not ignored.</p>
+                        </div>
+                        <div class="p-8 rounded-2xl bg-brand-panel/60 border border-white/5 hover:border-purple-500/50 hover:bg-brand-panel/80 transition-all group hover:shadow-[0_0_25px_rgba(168,85,247,0.15)] duration-300">
+                            <div class="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform group-hover:text-purple-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-purple-200">Real-Time Control</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Update your offers instantly based on time of day or inventory.</p>
+                        </div>
+                        <div class="p-8 rounded-2xl bg-brand-panel/60 border border-white/5 hover:border-emerald-500/50 hover:bg-brand-panel/80 transition-all group hover:shadow-[0_0_25px_rgba(16,185,129,0.15)] duration-300">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform group-hover:text-emerald-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-emerald-200">Cost Effective</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">No printing or installation costs. Just upload and go.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-20 pt-12 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center relative">
+                        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent"></div>
+                        <div>
+                            <div class="text-4xl font-display font-bold text-white mb-2 text-gradient-animate">83%</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-widest">Recall Rate</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-display font-bold text-white mb-2 text-gradient-animate" style="animation-delay: 1s;">47%</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-widest">Awareness Lift</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-display font-bold text-white mb-2 text-gradient-animate" style="animation-delay: 2s;">35%</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-widest">Less Wait Time</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-display font-bold text-white mb-2 text-gradient-animate" style="animation-delay: 3s;">24/7</div>
+                            <div class="text-xs text-slate-500 uppercase tracking-widest">Visibility</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section class="py-16 border-t border-white/5">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-4xl mx-auto mb-8">
+                        <button id="toggle-locations-btn" class="w-full glass-panel p-6 rounded-2xl flex justify-between items-center text-left transition-all duration-300 hover:bg-white/5 hover:border-brand-accent/30 group">
+                            <div class="flex items-center gap-4">
+                                <h2 class="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-accent transition-colors">View All Locations</h2>
+                                <span class="px-2 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] uppercase font-bold rounded flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    Live Network
+                                </span>
+                            </div>
+                            <svg id="locations-arrow" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-brand-accent transition-transform duration-300 transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div id="locations-grid-container" class="hidden fade-in">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="group relative overflow-hidden rounded-xl bg-brand-panel border border-brand-accent/30 h-64 shadow-lg hover:shadow-brand-accent/20 transition-all duration-500">
+                                <img src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwvV4USL3QXf63g9srXS86CMP3WRNWjviJ4vjNM3r7ovwpY1xbv7PoYZZev18dmcvXIqp7uKXxeJCtYb2geoR2W0CWvPwkEhas2Cpc8UaXQEkBAT2ZUv4rxE2P7hmQvlCSXjlTYhoxguvk_" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-6 w-full transform group-hover:translate-y-[-5px] transition-transform duration-300">
+                                    <h3 class="text-xl font-bold text-white mb-1">Bilal Thatukada</h3>
+                                    <p class="text-brand-accent text-sm mb-3">Uruvachal</p>
+                                    <div class="flex justify-between items-end">
+                                        <span class="px-2 py-0.5 rounded bg-white/10 text-[10px] border border-white/10 backdrop-blur-md">High Traffic</span>
+                                        <a href="https://maps.app.goo.gl/7v3uR8b4a299DDcdA?g_st=awb" target="_blank" class="text-xs text-white hover:text-brand-accent flex items-center gap-1 z-20 relative bg-brand-panel/50 px-2 py-1 rounded-md border border-white/20 hover:bg-brand-panel hover:border-brand-accent transition-all">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                            View Map
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rounded-xl bg-brand-panel/30 border border-white/5 h-64 flex flex-col items-center justify-center text-center p-6 border-dashed opacity-50 group hover:opacity-75 transition-opacity">
+                                <span class="text-slate-500 font-display font-bold text-2xl mb-2 group-hover:text-slate-300">Location #2</span>
+                                <span class="text-xs px-2 py-1 rounded bg-white/5 text-slate-400">Coming Soon</span>
+                            </div>
+                            <div class="rounded-xl bg-brand-panel/30 border border-white/5 h-64 flex flex-col items-center justify-center text-center p-6 border-dashed opacity-50 group hover:opacity-75 transition-opacity">
+                                <span class="text-slate-500 font-display font-bold text-2xl mb-2 group-hover:text-slate-300">Location #3</span>
+                                <span class="text-xs px-2 py-1 rounded bg-white/5 text-slate-400">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-20 relative overflow-hidden text-center">
+                <div class="absolute inset-0 bg-gradient-to-b from-brand-dark to-brand-panel -z-10"></div>
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-accent/10 rounded-full blur-[80px] -z-10"></div>
+                <div class="container mx-auto px-6">
+                    <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Ready to Scale?</h2>
+                    <p class="text-slate-400 max-w-xl mx-auto mb-10 text-lg">Start your digital campaign today and watch your business grow.</p>
+                    <button onclick="navigateTo('pricing')" class="px-10 py-5 rounded-xl bg-gradient-to-r from-brand-accent to-brand-glow text-slate-900 font-bold text-lg shadow-[0_0_30px_rgba(56,189,248,0.4)] hover:shadow-[0_0_50px_rgba(56,189,248,0.6)] hover:scale-105 transition-all">
+                        Launch Campaign Now
+                    </button>
+                </div>
             </section>
         </div>
         
-        <div id="pricing" class="page-section fade-in">
-             <div class="container mx-auto px-4 py-12">
-                <div class="text-center mb-12">
-                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
-                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Get an instant quote below.</p>
-                </div>
-                
-                <div class="w-full flex justify-center">
-                    <iframe src="calculator.html" class="w-full max-w-6xl h-[750px] md:h-[650px] border-0 rounded-2xl bg-transparent" allowtransparency="true"></iframe>
-                </div>
-             </div>
-        </div>
-
         <div id="platforms" class="page-section fade-in">
             <div class="container mx-auto px-6 py-20">
                 <div class="text-center mb-16">
-                    <h1 class="text-4xl font-display font-bold mb-6 text-white">Our Platforms</h1>
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Our Platforms</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Exploring new digital frontiers with specialized platforms for growth and learning.</p>
                 </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="glass-panel p-8 rounded-2xl group hover:border-purple-500/50 transition-all">
-                        <div class="text-4xl mb-6">🎓</div>
-                        <h3 class="text-xl font-bold text-white mb-2">Mastery Exams</h3>
-                        <p class="text-slate-400 text-sm mb-6">Premier EdTech platform for competitive exam preparation.</p>
-                        <a href="https://masteryexams.online" target="_blank" class="text-purple-400 font-bold text-sm hover:text-white transition-colors">Visit Platform →</a>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group hover:border-purple-500/50 transition-all duration-300 flex flex-col h-full hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+                         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] -z-10"></div>
+                         <div class="w-16 h-16 rounded-xl bg-purple-900/50 flex items-center justify-center text-3xl border border-purple-500/20 mb-6 shadow-lg shadow-purple-900/30 group-hover:scale-110 transition-transform">🎓</div>
+                         <div class="mb-4 flex-grow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Mastery Exams</h3>
+                                <span class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] uppercase font-bold shadow-[0_0_10px_rgba(168,85,247,0.3)]">Live</span>
+                            </div>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                A premier EdTech platform for competitive exam preparation. Access high-quality mock tests, real-time performance tracking, and detailed analytics.
+                            </p>
+                         </div>
+                         <div class="mt-auto pt-6 border-t border-white/5">
+                            <a href="https://masteryexams.online" target="_blank" class="inline-flex items-center gap-2 text-purple-400 font-bold hover:text-purple-300 transition-colors text-sm group/link">
+                                Visit Platform <span class="text-lg group-hover/link:translate-x-1 transition-transform">→</span>
+                            </a>
+                         </div>
                     </div>
-                    <div class="glass-panel p-8 rounded-2xl opacity-70 border-dashed">
-                        <div class="text-4xl mb-6 grayscale">🎨</div>
-                        <h3 class="text-xl font-bold text-white mb-2">Ad Studio</h3>
-                        <p class="text-slate-400 text-sm mb-6">Browser-based content creator. (Coming Soon)</p>
+
+                    <div class="p-8 rounded-2xl bg-brand-panel/30 border border-white/5 border-dashed flex flex-col h-full relative overflow-hidden group opacity-70 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-3xl border border-white/10 mb-6 grayscale opacity-50">🎨</div>
+                        <div class="mb-4 flex-grow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-slate-300">Ad Creator Studio</h3>
+                                <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-500 text-[10px] uppercase font-bold">Soon</span>
+                            </div>
+                            <p class="text-slate-500 text-sm leading-relaxed">Design your digital signage content directly in your browser. Drag-and-drop editor with templates optimized for our 4K screens.</p>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-white/5">
+                             <span class="text-slate-600 text-xs uppercase tracking-widest font-bold cursor-not-allowed flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> In Development
+                             </span>
+                        </div>
+                    </div>
+
+                    <div class="p-8 rounded-2xl bg-brand-panel/30 border border-white/5 border-dashed flex flex-col h-full relative overflow-hidden group opacity-70 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-3xl border border-white/10 mb-6 grayscale opacity-50">📊</div>
+                        <div class="mb-4 flex-grow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-slate-300">Obsera Analytics</h3>
+                                <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-500 text-[10px] uppercase font-bold">Soon</span>
+                            </div>
+                            <p class="text-slate-500 text-sm leading-relaxed">Client dashboard for real-time campaign performance. Track impressions, download proof-of-play reports, and manage invoices.</p>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-white/5">
+                             <span class="text-slate-600 text-xs uppercase tracking-widest font-bold cursor-not-allowed flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> In Development
+                             </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 rounded-2xl bg-brand-panel/30 border border-white/5 border-dashed flex flex-col h-full relative overflow-hidden group opacity-70 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-3xl border border-white/10 mb-6 grayscale opacity-50">💻</div>
+                        <div class="mb-4 flex-grow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-slate-300">Web Development</h3>
+                                <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-500 text-[10px] uppercase font-bold">Soon</span>
+                            </div>
+                            <p class="text-slate-500 text-sm leading-relaxed">Custom website solutions for local businesses. From landing pages to full e-commerce platforms, built for speed and SEO.</p>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-white/5">
+                             <span class="text-slate-600 text-xs uppercase tracking-widest font-bold cursor-not-allowed flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> In Development
+                             </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 rounded-2xl bg-brand-panel/30 border border-white/5 border-dashed flex flex-col h-full relative overflow-hidden group opacity-70 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 rounded-xl bg-white/5 flex items-center justify-center text-3xl border border-white/10 mb-6 grayscale opacity-50">📱</div>
+                        <div class="mb-4 flex-grow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-slate-300">Social Media Mgmt</h3>
+                                <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-500 text-[10px] uppercase font-bold">Soon</span>
+                            </div>
+                            <p class="text-slate-500 text-sm leading-relaxed">Comprehensive social media strategies to grow your online presence. Content creation, scheduling, and community engagement.</p>
+                        </div>
+                        <div class="mt-auto pt-6 border-t border-white/5">
+                             <span class="text-slate-600 text-xs uppercase tracking-widest font-bold cursor-not-allowed flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> In Development
+                             </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="about" class="page-section fade-in">
-            <div class="container mx-auto px-6 py-20 text-center">
-                <h1 class="text-4xl font-display font-bold mb-6 text-white">About Obsera</h1>
-                <p class="text-slate-400 max-w-2xl mx-auto mb-10">We bridge the gap between digital precision and physical presence.</p>
-                <div class="glass-panel p-8 rounded-2xl max-w-3xl mx-auto">
-                    <p class="text-slate-300 leading-relaxed">
-                        Obsera Solutions is more than just a media company. We are passionate about helping local businesses cut through the digital noise. 
-                        Our network consists of high-definition digital screens located in high-dwell time areas, ensuring your message isn't just seen—it's remembered.
-                    </p>
+        <div id="pricing" class="page-section fade-in">
+             <div class="container mx-auto px-6 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Select your options below to get an instant quote.</p>
+                </div>
+                
+                <div class="w-full flex justify-center">
+                    <iframe src="calculator.html" class="w-full max-w-6xl h-[800px] border-0 rounded-2xl bg-transparent" allowtransparency="true"></iframe>
+                </div>
+             </div>
+        </div>
+
+        <div id="blog-post-view" class="page-section fade-in hidden">
+            <div class="container mx-auto px-6 py-20 max-w-4xl">
+                <button onclick="navigateTo('blog')" class="mb-8 flex items-center gap-2 text-sm text-slate-400 hover:text-brand-accent transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    Back to Articles
+                </button>
+                <div class="glass-panel p-8 md:p-12 rounded-2xl border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-brand-accent/5 rounded-full blur-[80px] -z-10"></div>
+                    <span id="post-category" class="inline-block px-3 py-1 rounded-full bg-brand-accent/10 text-brand-accent text-xs font-bold uppercase tracking-widest mb-6">Category</span>
+                    <h1 id="post-title" class="text-3xl md:text-5xl font-display font-bold text-white mb-8 leading-tight">Blog Post Title</h1>
+                    <div id="post-content" class="prose prose-invert prose-lg max-w-none text-slate-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="blog" class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center mb-16">
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Digital Insights</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Trends and thoughts on the Digital Out-of-Home (DOOH) industry.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <article class="bg-brand-panel rounded-xl overflow-hidden border border-white/5 hover:border-brand-accent/30 transition-all group hover:-translate-y-1 shadow-lg hover:shadow-brand-accent/10 cursor-pointer" onclick="openBlogPost(1)">
+                        <div class="h-48 bg-slate-800 relative overflow-hidden">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-slate-900 group-hover:scale-105 transition-transform duration-700"></div>
+                             <div class="absolute bottom-4 left-4 font-display font-bold text-4xl text-white/10 group-hover:text-white/20 transition-colors">01</div>
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-brand-accent uppercase mb-2 block">Industry Trends</span>
+                            <h2 class="text-xl font-bold text-white mb-3 group-hover:text-brand-accent transition-colors">Why DOOH is Growing Faster Than Online Ads</h2>
+                            <p class="text-slate-400 text-sm mb-4">Digital Out-of-Home advertising is bypassing ad-blockers and reaching real people in the real world.</p>
+                            <button class="text-sm font-semibold text-white hover:underline flex items-center gap-1 group/link">Read Analysis <span class="group-hover/link:translate-x-1 transition-transform">→</span></button>
+                        </div>
+                    </article>
+                    <article class="bg-brand-panel rounded-xl overflow-hidden border border-white/5 hover:border-brand-accent/30 transition-all group hover:-translate-y-1 shadow-lg hover:shadow-brand-accent/10 cursor-pointer" onclick="openBlogPost(2)">
+                        <div class="h-48 bg-slate-800 relative overflow-hidden">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-purple-900 to-slate-900 group-hover:scale-105 transition-transform duration-700"></div>
+                             <div class="absolute bottom-4 left-4 font-display font-bold text-4xl text-white/10 group-hover:text-white/20 transition-colors">02</div>
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-brand-accent uppercase mb-2 block">Technology</span>
+                            <h2 class="text-xl font-bold text-white mb-3 group-hover:text-brand-accent transition-colors">Static vs. Digital: The ROI Comparison</h2>
+                            <p class="text-slate-400 text-sm mb-4">Why switching from traditional vinyl posters to dynamic LED screens saves money and increases engagement.</p>
+                            <button class="text-sm font-semibold text-white hover:underline flex items-center gap-1 group/link">Read Guide <span class="group-hover/link:translate-x-1 transition-transform">→</span></button>
+                        </div>
+                    </article>
+                    <article class="bg-brand-panel rounded-xl overflow-hidden border border-white/5 hover:border-brand-accent/30 transition-all group hover:-translate-y-1 shadow-lg hover:shadow-brand-accent/10 cursor-pointer" onclick="openBlogPost(3)">
+                        <div class="h-48 bg-slate-800 relative overflow-hidden">
+                             <div class="absolute inset-0 bg-gradient-to-tr from-emerald-900 to-slate-900 group-hover:scale-105 transition-transform duration-700"></div>
+                             <div class="absolute bottom-4 left-4 font-display font-bold text-4xl text-white/10 group-hover:text-white/20 transition-colors">03</div>
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-brand-accent uppercase mb-2 block">Case Study</span>
+                            <h2 class="text-xl font-bold text-white mb-3 group-hover:text-brand-accent transition-colors">Local Retail Success Stories</h2>
+                            <p class="text-slate-400 text-sm mb-4">How a local restaurant increased foot traffic by 30% using timed lunch-special ads.</p>
+                            <button class="text-sm font-semibold text-white hover:underline flex items-center gap-1 group/link">Read Story <span class="group-hover/link:translate-x-1 transition-transform">→</span></button>
+                        </div>
+                    </article>
                 </div>
             </div>
         </div>
 
         <div id="contact" class="page-section fade-in">
-            <div class="container mx-auto px-6 py-20 max-w-2xl">
-                <h1 class="text-4xl font-display font-bold mb-6 text-white text-center">Contact Us</h1>
-                <div class="glass-panel p-8 rounded-2xl">
-                    <form id="contact-form" class="space-y-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Name</label>
-                            <input type="text" name="name" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent outline-none">
+            <div class="container mx-auto px-6 py-20">
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Let's Talk Business</h1>
+                        <p class="text-slate-400 text-lg mb-8">Ready to launch your campaign? Have questions about our network? Reach out to us directly.</p>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4 group">
+                                <div class="w-12 h-12 rounded-lg bg-brand-panel border border-white/10 flex items-center justify-center text-brand-accent group-hover:bg-brand-accent/10 transition-colors">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-lg">Email Us</h3>
+                                    <a href="mailto:contact.obserasolutions@gmail.com" class="text-slate-400 hover:text-brand-accent transition-colors">contact.obserasolutions@gmail.com</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 group">
+                                <div class="w-12 h-12 rounded-lg bg-brand-panel border border-white/10 flex items-center justify-center text-green-500 group-hover:bg-green-500/10 transition-colors">
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-lg">WhatsApp Us</h3>
+                                    <p class="text-slate-400">+91 9562 551 376</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Message</label>
-                            <textarea name="message" rows="4" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent outline-none"></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-brand-accent text-slate-900 font-bold py-3 rounded-lg hover:bg-brand-glow transition-all">Send Message</button>
-                    </form>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-accent/5 to-transparent pointer-events-none"></div>
+                        <form id="contact-form" class="space-y-6 relative z-10">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Your Name</label>
+                                <input type="text" name="name" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent focus:bg-slate-900 focus:outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Email Address</label>
+                                <input type="email" name="email" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent focus:bg-slate-900 focus:outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Message</label>
+                                <textarea name="message" rows="4" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent focus:bg-slate-900 focus:outline-none transition-all"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-brand-accent text-slate-900 font-bold py-3 rounded-lg hover:bg-brand-glow transition-all hover:shadow-lg hover:shadow-brand-accent/20">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="terms" class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20 max-w-4xl">
+                <h1 class="text-3xl font-display font-bold mb-8 text-white">Terms and Conditions</h1>
+                <div class="text-slate-400 space-y-6 leading-relaxed bg-brand-panel/50 p-8 rounded-2xl border border-white/5 backdrop-blur-sm">
+                    <p><strong>Last Updated: 2025</strong></p>
+                    <p>Welcome to Obsera Solutions. By using our services, you agree to these terms.</p>
+                    <h2 class="text-xl font-bold text-white mt-8">1. Advertising Content</h2>
+                    <p>All content submitted for display on Obsera Solutions screens must comply with local laws and community standards. We reserve the right to reject any content that is deemed offensive, political, or inappropriate for a general audience.</p>
+                    <h2 class="text-xl font-bold text-white mt-8">2. Payments & Booking</h2>
+                    <p>Bookings are confirmed only upon receipt of payment. Prices are subject to change based on demand and seasonality. The calculator provided on this website is for estimation purposes only.</p>
+                    <h2 class="text-xl font-bold text-white mt-8">3. Refunds & Cancellations</h2>
+                    <p>Cancellations made 7 days prior to the campaign start date may be eligible for a partial refund. No refunds are issued once a campaign has gone live.</p>
+                    <h2 class="text-xl font-bold text-white mt-8">4. Technical Issues</h2>
+                    <p>While we strive for 100% uptime, technical glitches may occur. In the event of significant downtime (more than 24 hours), we will extend the campaign duration to compensate for lost time.</p>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <footer class="bg-brand-dark/90 border-t border-white/5 py-8 mt-auto backdrop-blur-xl relative z-20">
-        <div class="container mx-auto px-6 text-center text-slate-500 text-sm">
-            <p>&copy; 2025 Obsera Solutions. All Rights Reserved.</p>
+    <footer class="bg-brand-dark/90 border-t border-white/5 py-12 mt-auto backdrop-blur-xl relative z-20">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <div class="flex items-center gap-2 mb-2 opacity-50 justify-center md:justify-start hover:opacity-100 transition-opacity">
+                    <img src="https://raw.githubusercontent.com/Dax4477/obsera-assets/main/Gemini_Generated_Image_jejmw3jejmw3jejm.png" alt="Logo" class="h-6">
+                    <span class="font-display font-bold text-lg">OBSERA SOLUTIONS</span>
+                </div>
+                <p class="text-slate-500 text-sm">© 2025 Obsera Solutions. All Rights Reserved.</p>
+            </div>
+            <div class="flex gap-6 text-sm text-slate-400">
+                <a href="javascript:void(0)" onclick="navigateTo('terms')" class="hover:text-white transition-colors">Terms of Service</a>
+                <a href="javascript:void(0)" onclick="navigateTo('contact')" class="hover:text-white transition-colors">Support</a>
+            </div>
         </div>
     </footer>
 
     <script>
-        function navigateTo(pageId) {
-            // Hide all pages
+        // ================= SPA ROUTING LOGIC =================
+        function navigateTo(pageId, addToHistory = true) {
+            // 1. Hide all pages
             document.querySelectorAll('.page-section').forEach(el => {
                 el.classList.remove('active');
             });
             
-            // Show target
+            // 2. Show target page
             const target = document.getElementById(pageId);
-            if(target) target.classList.add('active');
+            if(target) {
+                target.classList.add('active');
+                target.classList.remove('hidden'); // Ensure it's not hidden
+            }
 
-            // Update Nav
+            // 3. Update Nav Active State
             document.querySelectorAll('.nav-item').forEach(el => {
                 el.classList.remove('text-brand-accent');
-                if(el.dataset.target === pageId) el.classList.add('text-brand-accent');
+                if(el.dataset.target === pageId) {
+                    el.classList.add('text-brand-accent');
+                }
             });
 
-            // Mobile Menu Close
-            document.getElementById('mobile-menu').classList.add('hidden');
-            
+            // 4. Close Mobile Menu
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+
+            // 5. Scroll to top
             window.scrollTo(0,0);
+
+            // 6. History State Management
+            if (addToHistory) {
+                history.pushState({ pageId: pageId, type: 'page' }, null, `#${pageId}`);
+            }
         }
 
         function toggleMobileMenu() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
-        // Contact Form
-        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const subject = "Inquiry - Obsera";
-            const body = `Name: ${formData.get('name')}\n\n${formData.get('message')}`;
-            window.location.href = `mailto:contact.obserasolutions@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        // Handle Browser Back Button
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.type === 'article') {
+                openBlogPost(event.state.postId, false);
+            } else {
+                const pageId = event.state ? event.state.pageId : 'home';
+                if (pageId === 'home') {
+                     // UI reset handled by navigateTo
+                }
+                navigateTo(pageId, false);
+            }
         });
+
+        // Handle Initial Load / Refresh
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                navigateTo(hash, false);
+                history.replaceState({ pageId: hash, type: 'page' }, null, `#${hash}`);
+            } else {
+                history.replaceState({ pageId: 'home', type: 'page' }, null, '');
+            }
+        });
+
+        // ================= BLOG LOGIC =================
+        const blogPosts = {
+            1: {
+                title: "The Rise of DOOH: Why Real-World Ads Are Beating Digital Noise",
+                category: "Industry Trends",
+                content: `
+                    <p>In a world where the average person sees over 10,000 ads a day online, 'banner blindness' has become a real challenge for marketers...</p>
+                    <p>Enter <strong>Digital Out-of-Home (DOOH)</strong>...</p>
+                    <ul>
+                        <li><strong>High Recall Rate:</strong> Studies show DOOH has a recall rate of 83%...</li>
+                        <li><strong>Contextual Relevance:</strong> Ads can be triggered by time of day...</li>
+                    </ul>
+                `
+            },
+            2: {
+                title: "Static vs. Digital: A Cost & ROI Breakdown",
+                category: "Technology",
+                content: `
+                    <p>For decades, the vinyl banner was the king of local advertising. But is it still the most cost-effective choice? Let's break down the numbers.</p>
+                    <p><strong>The Hidden Costs of Static:</strong></p>
+                    <ul>
+                        <li><strong>Production:</strong> Designing and printing costs...</li>
+                        <li><strong>Installation:</strong> Labor costs...</li>
+                    </ul>
+                `
+            },
+            3: {
+                title: "How Local Businesses Are Winning with Obsera",
+                category: "Case Study",
+                content: `
+                    <p>We recently partnered with a local fashion retailer in Kozhikode who was struggling to move inventory during weekdays...</p>
+                    <p>Within two weeks, they reported a <strong>30% increase in footfall</strong> during those specific hours.</p>
+                `
+            }
+        };
+
+        function openBlogPost(id, addToHistory = true) {
+            const post = blogPosts[id];
+            if (!post) return;
+
+            document.getElementById('post-category').textContent = post.category;
+            document.getElementById('post-title').textContent = post.title;
+            document.getElementById('post-content').innerHTML = post.content;
+
+            document.getElementById('blog').classList.remove('active');
+            const reader = document.getElementById('blog-post-view');
+            reader.classList.remove('hidden');
+            reader.classList.add('active');
+            
+            window.scrollTo(0,0);
+
+            if (addToHistory) {
+                history.pushState({ pageId: 'blog-post-view', type: 'article', postId: id }, null, `#article-${id}`);
+            }
+        }
+
+        // --- Toggle Locations Logic ---
+        const toggleBtn = document.getElementById('toggle-locations-btn');
+        const locationsGrid = document.getElementById('locations-grid-container');
+        const arrowIcon = document.getElementById('locations-arrow');
+
+        if(toggleBtn && locationsGrid && arrowIcon) {
+            toggleBtn.addEventListener('click', () => {
+                locationsGrid.classList.toggle('hidden');
+                arrowIcon.classList.toggle('rotate-180');
+            });
+        }
+
+        // --- Contact Form Logic ---
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const message = formData.get('message');
+
+                const subject = `Inquiry from ${name} - Obsera Solutions`;
+                const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+
+                const mailtoLink = `mailto:contact.obserasolutions@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            });
+        }
     </script>
+    
+    <script>
+    const indicator = document.createElement('div');
+    indicator.style.cssText = "position:fixed; bottom:10px; right:10px; width:15px; height:15px; background:gray; border-radius:50%; border:2px solid white; z-index:9999; box-shadow:0 0 5px rgba(0,0,0,0.5);";
+    document.body.appendChild(indicator);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let deviceId = urlParams.get('id') || localStorage.getItem('obsera_device_id');
+
+    if (!deviceId) {
+        deviceId = 'Mobile_' + Math.floor(Math.random() * 1000);
+        localStorage.setItem('obsera_device_id', deviceId);
+    }
+
+    function reportPresence() {
+        const fd = new FormData();
+        fd.append('device_id', deviceId);
+        fd.append('page_url', window.location.href);
+
+        fetch('https://obserasolutions.site/log_visit.php', { method: 'POST', body: fd })
+            .then(res => res.text())
+            .then(() => {
+                indicator.style.background = "#0f0";
+                setTimeout(() => { indicator.style.background = "gray"; }, 500);
+            })
+            .catch(err => {
+                console.error("Tracking Error:", err);
+                indicator.style.background = "red";
+            });
+    }
+
+    setInterval(reportPresence, 3000);
+    reportPresence();
+    </script>
+
 </body>
 </html>
