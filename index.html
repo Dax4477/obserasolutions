@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsera Solutions | Dynamic Digital Advertising</title>
+    
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Dax4477/obsera-assets/main/Gemini_Generated_Image_jejmw3jejmw3jejm.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-dark': '#0f172a',
+                        'brand-panel': '#1e293b',
+                        'brand-accent': '#38bdf8',
+                        'brand-glow': '#0ea5e9',
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                        'scroll': 'scroll 20s linear infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f172a; color: white; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+        .text-gradient-animate {
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc, #38bdf8);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientMove 3s linear infinite;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+    </style>
+</head>
+<body class="overflow-x-hidden min-h-screen flex flex-col justify-between relative">
+
+    <div class="fixed inset-0 w-full h-full pointer-events-none z-0">
+        <div class="absolute inset-0 bg-grid opacity-50"></div>
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-brand-accent rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 glass-panel border-b border-white/5">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="javascript:void(0)" onclick="navigateTo('home')" class="flex items-center gap-3">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-200"></div>
+                    <img src="https://raw.githubusercontent.com/Dax4477/obsera-assets/main/Gemini_Generated_Image_jejmw3jejmw3jejm.png" alt="Logo" class="h-8 relative">
+                </div>
+                <span class="font-display font-bold text-xl tracking-wide text-white">OBSERA</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                <a href="javascript:void(0)" onclick="navigateTo('home')" class="hover:text-white transition-colors nav-item text-brand-accent" data-target="home">Home</a>
+                <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="hover:text-white transition-colors nav-item" data-target="pricing">Pricing</a>
+                <a href="javascript:void(0)" onclick="navigateTo('platforms')" class="hover:text-white transition-colors nav-item flex items-center gap-1 text-purple-400 hover:text-purple-300" data-target="platforms">
+                    Platforms <span class="bg-purple-500/20 text-xs px-1.5 py-0.5 rounded border border-purple-500/30">New</span>
+                </a>
+                <a href="javascript:void(0)" onclick="navigateTo('about')" class="hover:text-white transition-colors nav-item" data-target="about">About</a>
+                <a href="javascript:void(0)" onclick="navigateTo('contact')" class="hover:text-white transition-colors nav-item" data-target="contact">Contact</a>
+            </div>
+
+            <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="hidden md:inline-flex px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white text-sm font-semibold transition-all hover:shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+                Get Quote
+            </a>
+
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            </button>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-panel border-b border-white/10 p-4 absolute w-full top-[73px] left-0 z-40 shadow-xl backdrop-blur-xl bg-opacity-95">
+            <a href="javascript:void(0)" onclick="navigateTo('home')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Home</a>
+            <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Pricing</a>
+            <a href="javascript:void(0)" onclick="navigateTo('platforms')" class="block py-3 px-2 text-purple-400 hover:text-white border-b border-white/5 font-bold">Platforms</a>
+            <a href="javascript:void(0)" onclick="navigateTo('about')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">About</a>
+            <a href="javascript:void(0)" onclick="navigateTo('contact')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Contact</a>
+        </div>
+    </nav>
+
+    <main class="pt-24 flex-grow relative z-10">
+
+        <div id="home" class="page-section active fade-in">
+            <section class="pt-20 pb-16 text-center px-6">
+                <div class="container mx-auto">
+                    <div class="inline-block px-3 py-1 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold tracking-widest uppercase mb-6 shadow-[0_0_10px_rgba(56,189,248,0.2)]">
+                        Hyper-Local Digital Media
+                    </div>
+                    <h1 class="font-display text-5xl md:text-7xl font-bold leading-tight mb-6 text-white drop-shadow-xl">
+                        Advertising That <br> <span class="text-gradient-animate">Actually Moves.</span>
+                    </h1>
+                    <p class="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                        High-impact digital screens in high-traffic zones. Cut through the noise and dominate the visual space with Obsera Solutions.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button onclick="navigateTo('pricing')" class="px-8 py-4 rounded-lg bg-brand-accent hover:bg-brand-glow text-slate-900 font-bold shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all transform hover:-translate-y-1">
+                            Calculate Price
+                        </button>
+                        <button onclick="navigateTo('about')" class="px-8 py-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold transition-all">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="py-24 container mx-auto px-6 border-t border-white/5">
+                 <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
+                        <div class="text-4xl mb-4">📍</div>
+                        <h3 class="font-bold text-white text-xl mb-2">Prime Locations</h3>
+                        <p class="text-slate-400 text-sm">Strategically placed screens in high-dwell time areas.</p>
+                    </div>
+                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h3 class="font-bold text-white text-xl mb-2">Instant Go-Live</h3>
+                        <p class="text-slate-400 text-sm">Upload your creative and see it live within minutes.</p>
+                    </div>
+                    <div class="p-6 bg-brand-panel/50 rounded-2xl border border-white/5">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="font-bold text-white text-xl mb-2">Cost Effective</h3>
+                        <p class="text-slate-400 text-sm">No printing costs. No installation fees. Just results.</p>
+                    </div>
+                 </div>
+            </section>
+        </div>
+        
+        <div id="pricing" class="page-section fade-in">
+             <div class="container mx-auto px-4 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Get an instant quote below.</p>
+                </div>
+                
+                <div class="w-full flex justify-center">
+                    <iframe src="calculator.html" class="w-full max-w-6xl h-[750px] md:h-[650px] border-0 rounded-2xl bg-transparent" allowtransparency="true"></iframe>
+                </div>
+             </div>
+        </div>
+
+        <div id="platforms" class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center mb-16">
+                    <h1 class="text-4xl font-display font-bold mb-6 text-white">Our Platforms</h1>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-2xl group hover:border-purple-500/50 transition-all">
+                        <div class="text-4xl mb-6">🎓</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Mastery Exams</h3>
+                        <p class="text-slate-400 text-sm mb-6">Premier EdTech platform for competitive exam preparation.</p>
+                        <a href="https://masteryexams.online" target="_blank" class="text-purple-400 font-bold text-sm hover:text-white transition-colors">Visit Platform →</a>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl opacity-70 border-dashed">
+                        <div class="text-4xl mb-6 grayscale">🎨</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Ad Studio</h3>
+                        <p class="text-slate-400 text-sm mb-6">Browser-based content creator. (Coming Soon)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20 text-center">
+                <h1 class="text-4xl font-display font-bold mb-6 text-white">About Obsera</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto mb-10">We bridge the gap between digital precision and physical presence.</p>
+                <div class="glass-panel p-8 rounded-2xl max-w-3xl mx-auto">
+                    <p class="text-slate-300 leading-relaxed">
+                        Obsera Solutions is more than just a media company. We are passionate about helping local businesses cut through the digital noise. 
+                        Our network consists of high-definition digital screens located in high-dwell time areas, ensuring your message isn't just seen—it's remembered.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20 max-w-2xl">
+                <h1 class="text-4xl font-display font-bold mb-6 text-white text-center">Contact Us</h1>
+                <div class="glass-panel p-8 rounded-2xl">
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Name</label>
+                            <input type="text" name="name" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Message</label>
+                            <textarea name="message" rows="4" required class="w-full bg-slate-900/50 border border-white/10 rounded-lg p-3 text-white focus:border-brand-accent outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-accent text-slate-900 font-bold py-3 rounded-lg hover:bg-brand-glow transition-all">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-brand-dark/90 border-t border-white/5 py-8 mt-auto backdrop-blur-xl relative z-20">
+        <div class="container mx-auto px-6 text-center text-slate-500 text-sm">
+            <p>&copy; 2025 Obsera Solutions. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function navigateTo(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show target
+            const target = document.getElementById(pageId);
+            if(target) target.classList.add('active');
+
+            // Update Nav
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('text-brand-accent');
+                if(el.dataset.target === pageId) el.classList.add('text-brand-accent');
+            });
+
+            // Mobile Menu Close
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+            window.scrollTo(0,0);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // Contact Form
+        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const subject = "Inquiry - Obsera";
+            const body = `Name: ${formData.get('name')}\n\n${formData.get('message')}`;
+            window.location.href = `mailto:contact.obserasolutions@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        });
+    </script>
+</body>
+</html>
