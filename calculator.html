@@ -102,13 +102,19 @@
                     <div class="flex justify-between"><span class="text-slate-400">Format:</span><span id="res-format" class="text-white font-mono">Video</span></div>
                     <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
                     <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">1</span></div>
-                    <div class="flex justify-between pt-2 border-t border-white/5"><span class="text-slate-400">Est. Plays:</span><span class="text-sky-400 font-mono" id="res-plays">0</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Active Hours:</span><span class="text-white font-mono">24 Hours/Day</span></div>
+                    
+                    <div class="flex justify-between pt-2 border-t border-white/5">
+                        <span class="text-slate-400">Est. Cost:</span>
+                        <span class="text-green-400 font-bold font-mono" id="res-cost">₹0</span>
+                    </div>
                 </div>
             </div>
 
             <div class="mt-8">
-                <span class="text-[10px] text-slate-500 uppercase block mb-1">Total Estimated Cost</span>
-                <div class="text-4xl font-display font-bold text-white mb-6" id="total-price">₹0</div>
+                <span class="text-[10px] text-slate-500 uppercase block mb-1">Total Estimated Playcount</span>
+                <div class="text-4xl font-display font-bold text-sky-400 mb-6" id="total-plays-main">0</div>
+                
                 <button onclick="sendWhatsApp()" id="book-btn" class="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 text-white shadow-lg shadow-green-900/20">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                     Book via WhatsApp
@@ -120,6 +126,7 @@
     <script>
         const BASE_RATE = 99; // Base price for 30s per day
         const WHATSAPP_NUM = '919562551376';
+        const HOURS_PER_DAY = 24; // Defined constant for clarity
 
         function toggleCustomDays() {
             const select = document.getElementById('days');
@@ -134,17 +141,12 @@
         }
 
         function calculate() {
-            // 1. Get Selected Locations
+            // Inputs
             const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
             const nodeCount = selectedNodes.length;
-            
-            // 2. Get Ad Type
             const isVideo = document.querySelector('input[name="ad-type"]:checked').value === 'video';
-            
-            // 3. Get Duration
             const duration = parseInt(document.getElementById('duration').value);
             
-            // 4. Get Days
             const daySelect = document.getElementById('days');
             let days = 0;
             if (daySelect.value === 'custom') {
@@ -153,16 +155,13 @@
                 days = parseInt(daySelect.value);
             }
 
-            // Calculation Logic
+            // Calculations
             const typeMultiplier = isVideo ? 1 : 0.5;
-            // Formula: (Base / 30s) * Duration * Days * Locations * TypeMultiplier
             const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
             
-            // Plays Logic (Plays per day * days * screens)
-            // Example: 30s ad = 120 plays/hour = 2880 plays/day approx (assuming 24h)
-            // Adjusted realistic loops per hour approx 60 mins / (duration + buffer)
+            // Play Count Calculation (3600 sec/hr / duration * 24 hours * days * screens)
             const loopsPerHour = Math.floor(3600 / duration); 
-            const totalPlays = loopsPerHour * 24 * days * nodeCount;
+            const totalPlays = loopsPerHour * HOURS_PER_DAY * days * nodeCount;
 
             // Update UI
             document.getElementById('dur-val').textContent = duration + 's';
@@ -171,9 +170,10 @@
             document.getElementById('res-format').textContent = isVideo ? 'Video Ad' : 'Poster Ad';
             document.getElementById('res-dur').textContent = duration + 's';
             document.getElementById('res-screens').textContent = nodeCount;
-            document.getElementById('res-plays').textContent = nodeCount > 0 && days > 0 ? totalPlays.toLocaleString() : '0';
             
-            document.getElementById('total-price').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
+            // Updates for Swapped Layout
+            document.getElementById('res-cost').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
+            document.getElementById('total-plays-main').textContent = nodeCount > 0 && days > 0 ? totalPlays.toLocaleString() : '0';
 
             // Button State
             const btn = document.getElementById('book-btn');
@@ -187,25 +187,24 @@
         }
 
         function sendWhatsApp() {
-            const cost = document.getElementById('total-price').textContent;
+            const cost = document.getElementById('res-cost').textContent; // Grab from summary now
+            const plays = document.getElementById('total-plays-main').textContent;
             const days = document.getElementById('day-val').textContent;
             const duration = document.getElementById('dur-val').textContent;
             const type = document.getElementById('res-format').textContent;
-            
-            // Get locations names
             const locs = Array.from(document.querySelectorAll('input[name="node"]:checked')).map(n => n.value).join(', ');
 
             let msg = `*New Booking Inquiry*\n\n`;
             msg += `Locations: ${locs}\n`;
             msg += `Type: ${type} (${duration})\n`;
             msg += `Campaign: ${days}\n`;
+            msg += `Est. Plays: ${plays}\n`;
             msg += `*Estimated Cost: ${cost}*\n\n`;
             msg += `I would like to proceed with this plan.`;
 
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Init
         calculate();
     </script>
 </body>
