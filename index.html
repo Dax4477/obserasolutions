@@ -660,23 +660,17 @@
                 openBlogPost(event.state.postId, false);
             } else {
                 const pageId = event.state ? event.state.pageId : 'home';
-                if (pageId === 'home') {
-                     // UI reset handled by navigateTo
-                }
                 navigateTo(pageId, false);
             }
         });
 
-        // Handle Initial Load / Refresh
+        // --- PASTE THE NEW CODE HERE ---
         document.addEventListener('DOMContentLoaded', () => {
-            const hash = window.location.hash.substring(1);
-            if (hash && document.getElementById(hash)) {
-                navigateTo(hash, false);
-                history.replaceState({ pageId: hash, type: 'page' }, null, `#${hash}`);
-            } else {
-                history.replaceState({ pageId: 'home', type: 'page' }, null, '');
-            }
+            // Force "Home" section on every refresh
+            navigateTo('home', false);
+            history.replaceState({ pageId: 'home', type: 'page' }, null, window.location.pathname);
         });
+        // -------------------------------
 
         // ================= BLOG LOGIC =================
         const blogPosts = {
