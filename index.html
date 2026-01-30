@@ -787,5 +787,36 @@
     reportPresence();
     </script>
 
+    <script>
+    // 1. Set your starting "Social Proof" number
+    const STARTING_COUNT = 63521; 
+
+    function loadSmartCounter() {
+        // Check if the user has visited before
+        let currentCount = localStorage.getItem('site_visits');
+
+        if (!currentCount) {
+            // First time visitor? Set to starting number
+            currentCount = STARTING_COUNT;
+        } else {
+            // Returning visitor? Fake a realistic increase
+            // Adds 1 visit for this user
+            currentCount = parseInt(currentCount) + 1;
+        }
+
+        // Save the new count so it remembers them next time
+        localStorage.setItem('site_visits', currentCount);
+
+        // Display it with comma formatting (e.g., 63,522)
+        const displayElement = document.getElementById('global-visit-counter');
+        if (displayElement) {
+            displayElement.innerText = currentCount.toLocaleString();
+        }
+    }
+
+    // Run immediately
+    loadSmartCounter();
+</script>
+
 </body>
 </html>
