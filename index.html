@@ -138,12 +138,7 @@
                 Get Quote
             </a>
 
-            <button onclick="toggleMobileMenu()" class="md:hidden text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
-            </button>
-        </div>
-
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md ml-4">
+             <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md ml-4">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
         <circle cx="12" cy="12" r="3"></circle>
@@ -154,7 +149,10 @@
     </span>
 </div>
 
-        
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+            </button>
+        </div>  
         <div id="mobile-menu" class="hidden md:hidden bg-brand-panel border-b border-white/10 p-4 absolute w-full top-[73px] left-0 z-40 shadow-xl backdrop-blur-xl bg-opacity-95">
             <a href="javascript:void(0)" onclick="navigateTo('home')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Home</a>
             <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Pricing</a>
