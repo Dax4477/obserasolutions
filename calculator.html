@@ -134,134 +134,132 @@
         </div>
     </div>
 
-    <script>
-        const BASE_RATE = 99; // Base price for 30s per day
-        const WHATSAPP_NUM = '919562551376';
+   <script>
+    const BASE_RATE = 99; // Base price for 30s per day
+    const WHATSAPP_NUM = '919562551376';
+    
+    // Define Active Hours per location
+    const LOCATIONS_DATA = {
+        'Uruvachal': { name: 'Uruvachal', hours: 17 },
+        'Medical College': { name: 'Medical College', hours: 24 }
+    };
+
+    function toggleCustomDays() {
+        const select = document.getElementById('days');
+        const customInput = document.getElementById('custom-days-input');
+        if (select.value === 'custom') {
+            customInput.classList.remove('hidden');
+            customInput.focus();
+        } else {
+            customInput.classList.add('hidden');
+        }
+        calculate();
+    }
+
+    function calculate() {
+        // --- 1. Get Inputs ---
+        const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
+        const nodeCount = selectedNodes.length;
+        const isVideo = document.querySelector('input[name="ad-type"]:checked').value === 'video';
+        const duration = parseInt(document.getElementById('duration').value);
         
-        // Define Active Hours per location
-        const LOCATIONS_DATA = {
-            'Uruvachal': { name: 'Uruvachal', hours: 17 },
-            'Medical College': { name: 'Medical College', hours: 24 }
-        };
-
-        function toggleCustomDays() {
-            const select = document.getElementById('days');
-            const customInput = document.getElementById('custom-days-input');
-            if (select.value === 'custom') {
-                customInput.classList.remove('hidden');
-                customInput.focus();
-            } else {
-                customInput.classList.add('hidden');
-            }
-            calculate();
+        const daySelect = document.getElementById('days');
+        let days = 0;
+        if (daySelect.value === 'custom') {
+            days = parseInt(document.getElementById('custom-days-input').value) || 0;
+        } else {
+            days = parseInt(daySelect.value);
         }
 
-        function calculate() {
-            // --- 1. Get Inputs ---
-            const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
-            const nodeCount = selectedNodes.length;
-            const isVideo = document.querySelector('input[name="ad-type"]:checked').value === 'video';
-            const duration = parseInt(document.getElementById('duration').value); // Duration affects play count
-            
-            const daySelect = document.getElementById('days');
-            let days = 0;
-            if (daySelect.value === 'custom') {
-                days = parseInt(document.getElementById('custom-days-input').value) || 0;
-            } else {
-                days = parseInt(daySelect.value);
-            }
+        // --- 2. Cost Calculation ---
+        const typeMultiplier = isVideo ? 1 : 0.5;
+        const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
+        
+        // --- 3. Playcount Calculation (FIXED 12 PLAYS/HOUR) ---
+        // 60 mins / 5 min loop = 12 plays per hour
+        const loopsPerHour = 12; 
+        
+        let totalPlays = 0;
+        let breakdownHTML = '';
 
-            // --- 2. Cost Calculation ---
-            const typeMultiplier = isVideo ? 1 : 0.5;
-            const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
-            
-            // --- 3. Playcount Calculation (DYNAMIC BASED ON DURATION) ---
-            // 3600 seconds in an hour. 
-            // 10s video = 360 plays/hr. 30s video = 120 plays/hr.
-            const loopsPerHour = Math.floor(3600 / duration);
-            
-            let totalPlays = 0;
-            let breakdownHTML = '';
-
-            if (nodeCount > 0 && days > 0) {
-                selectedNodes.forEach(node => {
-                    const locData = LOCATIONS_DATA[node.value];
-                    if (locData) {
-                        // Plays = Loops/Hr * Active Hours * Days
-                        const screenPlays = loopsPerHour * locData.hours * days;
-                        totalPlays += screenPlays;
-                        
-                        // Add to breakdown list
-                        breakdownHTML += `
-                            <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                                <span>${locData.name} (${locData.hours}h):</span>
-                                <span class="font-mono text-white">${screenPlays.toLocaleString()}</span>
-                            </div>
-                        `;
-                    }
-                });
-            }
-
-            // --- 4. Update UI ---
-            document.getElementById('dur-val').textContent = duration + 's';
-            document.getElementById('day-val').textContent = days + (days === 1 ? ' Day' : ' Days');
-            
-            document.getElementById('res-format').textContent = isVideo ? 'Video Ad' : 'Poster Ad';
-            document.getElementById('res-dur').textContent = duration + 's';
-            document.getElementById('res-screens').textContent = nodeCount;
-            document.getElementById('res-cost').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
-            
-            // Update Plays Display
-            document.getElementById('total-plays-main').textContent = totalPlays.toLocaleString();
-            document.getElementById('plays-breakdown').innerHTML = breakdownHTML;
-
-            // Button State
-            const btn = document.getElementById('book-btn');
-            if(nodeCount === 0 || days === 0) {
-                btn.style.opacity = '0.5';
-                btn.style.pointerEvents = 'none';
-            } else {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-            }
-        }
-
-        function sendWhatsApp() {
-            const cost = document.getElementById('res-cost').textContent;
-            const days = document.getElementById('day-val').textContent;
-            const duration = parseInt(document.getElementById('duration').value); 
-            const type = document.getElementById('res-format').textContent;
-            
-            let locsDetails = '';
-            const selectedNodes = document.querySelectorAll('input[name="node"]:checked');
-            
-            // Dynamic Loops per Hour for message
-            const loopsPerHour = Math.floor(3600 / duration); 
-
+        if (nodeCount > 0 && days > 0) {
             selectedNodes.forEach(node => {
                 const locData = LOCATIONS_DATA[node.value];
-                let d = 0;
-                const daySelect = document.getElementById('days');
-                if (daySelect.value === 'custom') d = parseInt(document.getElementById('custom-days-input').value) || 0;
-                else d = parseInt(daySelect.value);
-                
-                const plays = loopsPerHour * locData.hours * d;
-                locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
+                if (locData) {
+                    // Plays = 12 * Active Hours * Days
+                    const screenPlays = loopsPerHour * locData.hours * days;
+                    totalPlays += screenPlays;
+                    
+                    // Add to breakdown list
+                    breakdownHTML += `
+                        <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
+                            <span>${locData.name} (${locData.hours}h):</span>
+                            <span class="font-mono text-white">${screenPlays.toLocaleString()}</span>
+                        </div>
+                    `;
+                }
             });
-
-            let msg = `*New Booking Inquiry*\n\n`;
-            msg += `*Format:* ${type} (${duration}s)\n`;
-            msg += `*Duration:* ${days}\n\n`;
-            msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
-            // Cost is hidden in UI, so likely excluded from message unless you want it back
-            // msg += `*Total Cost: ${cost}*\n\n`; 
-            msg += `I would like to proceed with this plan.`;
-
-            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Initialize
-        calculate();
-    </script>
+        // --- 4. Update UI ---
+        document.getElementById('dur-val').textContent = duration + 's';
+        document.getElementById('day-val').textContent = days + (days === 1 ? ' Day' : ' Days');
+        
+        document.getElementById('res-format').textContent = isVideo ? 'Video Ad' : 'Poster Ad';
+        document.getElementById('res-dur').textContent = duration + 's';
+        document.getElementById('res-screens').textContent = nodeCount;
+        document.getElementById('res-cost').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
+        
+        // Update Plays Display
+        document.getElementById('total-plays-main').textContent = totalPlays.toLocaleString();
+        document.getElementById('plays-breakdown').innerHTML = breakdownHTML;
+
+        // Button State
+        const btn = document.getElementById('book-btn');
+        if(nodeCount === 0 || days === 0) {
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
+        } else {
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        }
+    }
+
+    function sendWhatsApp() {
+        const cost = document.getElementById('res-cost').textContent;
+        const days = document.getElementById('day-val').textContent;
+        const duration = document.getElementById('dur-val').textContent;
+        const type = document.getElementById('res-format').textContent;
+        
+        let locsDetails = '';
+        const selectedNodes = document.querySelectorAll('input[name="node"]:checked');
+        
+        // Fixed Loop for WhatsApp Message
+        const loopsPerHour = 12; 
+
+        selectedNodes.forEach(node => {
+            const locData = LOCATIONS_DATA[node.value];
+            let d = 0;
+            const daySelect = document.getElementById('days');
+            if (daySelect.value === 'custom') d = parseInt(document.getElementById('custom-days-input').value) || 0;
+            else d = parseInt(daySelect.value);
+            
+            const plays = loopsPerHour * locData.hours * d;
+            locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
+        });
+
+        let msg = `*New Booking Inquiry (5-min Loop)*\n\n`;
+        msg += `*Format:* ${type} (${duration})\n`;
+        msg += `*Duration:* ${days}\n\n`;
+        msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
+        // msg += `*Total Cost: ${cost}*\n\n`;
+        msg += `I would like to proceed with this plan.`;
+
+        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // Initialize
+    calculate();
+</script>
 </body>
 </html>
