@@ -7,14 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
+        /* Transparent background for iframe integration */
         body { background-color: transparent; color: white; font-family: 'Inter', sans-serif; }
         
+        /* Glass Panel */
         .glass-panel { 
             background: rgba(30, 41, 59, 0.6); 
             backdrop-filter: blur(12px); 
             border: 1px solid rgba(255, 255, 255, 0.1); 
         }
 
+        /* Slider Styling */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
@@ -23,6 +26,7 @@
         }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #334155; border-radius: 2px; }
         
+        /* Scrollbar Styling */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
@@ -225,7 +229,7 @@
         function sendWhatsApp() {
             const cost = document.getElementById('res-cost').textContent;
             const days = document.getElementById('day-val').textContent;
-            const duration = parseInt(document.getElementById('duration').value); // Get duration directly for math
+            const duration = parseInt(document.getElementById('duration').value); 
             const type = document.getElementById('res-format').textContent;
             
             let locsDetails = '';
@@ -249,7 +253,7 @@
             msg += `*Format:* ${type} (${duration}s)\n`;
             msg += `*Duration:* ${days}\n\n`;
             msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
-            // Cost is hidden in UI but can be included if desired
+            // Cost is hidden in UI, so likely excluded from message unless you want it back
             // msg += `*Total Cost: ${cost}*\n\n`; 
             msg += `I would like to proceed with this plan.`;
 
