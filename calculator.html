@@ -130,7 +130,7 @@
         </div>
     </div>
 
-  <script>
+    <script>
         const BASE_RATE = 99; // Base price for 30s per day
         const WHATSAPP_NUM = '919562551376';
         
@@ -153,13 +153,12 @@
         }
 
         function calculate() {
-            // --- 1. Get Inputs ---
+            // Inputs
             const selectedNodes = Array.from(document.querySelectorAll('input[name="node"]:checked'));
             const nodeCount = selectedNodes.length;
             const isVideo = document.querySelector('input[name="ad-type"]:checked').value === 'video';
-            const duration = parseInt(document.getElementById('duration').value); // e.g., 10, 30, 60
+            const duration = parseInt(document.getElementById('duration').value);
             
-            // Get Days
             const daySelect = document.getElementById('days');
             let days = 0;
             if (daySelect.value === 'custom') {
@@ -168,17 +167,13 @@
                 days = parseInt(daySelect.value);
             }
 
-            // --- 2. Cost Calculation ---
+            // --- Cost Calculation ---
             // Formula: (Base / 30s) * Duration * Days * Locations * TypeMultiplier
             const typeMultiplier = isVideo ? 1 : 0.5;
             const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
             
-            // --- 3. Playcount Calculation (Dynamic) ---
-            // Logic: 3600 seconds in an hour.
-            // If video is 10s: 3600 / 10 = 360 loops per hour.
-            // If video is 60s: 3600 / 60 = 60 loops per hour.
+            // --- Playcount Calculation (Per Screen) ---
             const loopsPerHour = Math.floor(3600 / duration);
-            
             let totalPlays = 0;
             let breakdownHTML = '';
 
@@ -186,14 +181,14 @@
                 selectedNodes.forEach(node => {
                     const locData = LOCATIONS_DATA[node.value];
                     if (locData) {
-                        // Plays = Loops/Hr * Active Hours for this screen * Days
+                        // Calculate plays for THIS specific screen
                         const screenPlays = loopsPerHour * locData.hours * days;
                         totalPlays += screenPlays;
                         
                         // Add to breakdown list
                         breakdownHTML += `
                             <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                                <span>${locData.name} (${locData.hours}h/day):</span>
+                                <span>${locData.name} (${locData.hours}h):</span>
                                 <span class="font-mono text-white">${screenPlays.toLocaleString()}</span>
                             </div>
                         `;
@@ -201,16 +196,15 @@
                 });
             }
 
-            // --- 4. Update UI ---
+            // Update UI
             document.getElementById('dur-val').textContent = duration + 's';
             document.getElementById('day-val').textContent = days + (days === 1 ? ' Day' : ' Days');
-            
             document.getElementById('res-format').textContent = isVideo ? 'Video Ad' : 'Poster Ad';
             document.getElementById('res-dur').textContent = duration + 's';
             document.getElementById('res-screens').textContent = nodeCount;
             document.getElementById('res-cost').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
             
-            // Update Plays Display
+            // Update Plays
             document.getElementById('total-plays-main').textContent = totalPlays.toLocaleString();
             document.getElementById('plays-breakdown').innerHTML = breakdownHTML;
 
@@ -234,8 +228,6 @@
             // Generate detailed string for selected locations
             let locsDetails = '';
             const selectedNodes = document.querySelectorAll('input[name="node"]:checked');
-            
-            // Recalculate solely for the message to ensure accuracy
             selectedNodes.forEach(node => {
                 const locData = LOCATIONS_DATA[node.value];
                 const loopsPerHour = Math.floor(3600 / parseInt(document.getElementById('duration').value));
@@ -245,20 +237,19 @@
                 else d = parseInt(daySelect.value);
                 
                 const plays = loopsPerHour * locData.hours * d;
-                locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
+                locsDetails += `- ${locData.name}: ~${plays} plays\n`;
             });
 
             let msg = `*New Booking Inquiry*\n\n`;
             msg += `*Format:* ${type} (${duration})\n`;
             msg += `*Duration:* ${days}\n\n`;
-            msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
-            //msg += `*Total Cost: ${cost}*\n\n`;
+            msg += `*Locations & Plays:*\n${locsDetails}\n`;
+            msg += `*Total Cost: ${cost}*\n\n`;
             msg += `I would like to proceed with this plan.`;
 
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Initialize
         calculate();
     </script>
 </body>
