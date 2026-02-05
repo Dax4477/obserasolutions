@@ -535,9 +535,22 @@
                     <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Select your options below to get an instant quote.</p>
                 </div>
                 
-                <div class="w-full flex justify-center">
-                    <iframe src="calculator.html" class="w-full max-w-6xl h-[800px] border-0 rounded-2xl bg-transparent overflow-hidden" scrolling="no"   allowtransparency="true"></iframe>
-                </div>
+             
+
+                 <div class="w-full flex justify-center">
+    <iframe 
+        id="calc-frame"
+        src="calculator.html" 
+        class="w-full max-w-6xl border-0 rounded-2xl bg-transparent" 
+        style="width: 1px; min-width: 100%;">
+    </iframe>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script>
+  // This initializes the resizer on the iframe with the ID 'calc-frame'
+  iFrameResize({ log: false }, '#calc-frame')
+</script>
+                 
              </div>
         </div>
 
@@ -691,6 +704,9 @@
     </footer>
 
     <script>
+
+
+        
         // ================= SPA ROUTING LOGIC =================
         function navigateTo(pageId, addToHistory = true) {
             // 1. Hide all pages
