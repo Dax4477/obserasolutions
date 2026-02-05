@@ -852,6 +852,14 @@
                 window.location.href = mailtoLink;
             });
         }
+
+        // In index.html
+document.addEventListener('DOMContentLoaded', () => {
+    const frame = document.getElementById('calc-frame');
+    if(frame) {
+        iFrameResize({ log: false, checkOrigin: false }, '#calc-frame');
+    }
+});
     </script>
     
     <script>
