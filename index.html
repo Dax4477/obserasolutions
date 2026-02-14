@@ -126,6 +126,11 @@
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
                 <a href="javascript:void(0)" onclick="navigateTo('home')" class="hover:text-white transition-colors nav-item text-brand-accent" data-target="home">Home</a>
                 <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="hover:text-white transition-colors nav-item" data-target="pricing">Pricing</a>
+                
+                <a href="javascript:void(0)" onclick="navigateTo('portal')" class="hover:text-white transition-colors nav-item flex items-center gap-1 text-emerald-400 hover:text-emerald-300" data-target="portal">
+                    Ad Portal
+                </a>
+                
                 <a href="javascript:void(0)" onclick="navigateTo('platforms')" class="hover:text-white transition-colors nav-item flex items-center gap-1 text-purple-400 hover:text-purple-300" data-target="platforms">
                     Platforms <span class="bg-purple-500/20 text-xs px-1.5 py-0.5 rounded border border-purple-500/30">New</span>
                 </a>
@@ -138,24 +143,24 @@
                 Get Quote
             </a>
 
-             <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md ml-4">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-    
-    <span id="global-visit-counter" class="text-brand-accent font-mono font-bold text-sm tracking-wide">
-        ...
-    </span>
-</div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md ml-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span id="global-visit-counter" class="text-brand-accent font-mono font-bold text-sm tracking-wide">
+                    ...
+                </span>
+            </div>
 
-            <button onclick="toggleMobileMenu()" class="md:hidden text-white">
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
             </button>
         </div>  
         <div id="mobile-menu" class="hidden md:hidden bg-brand-panel border-b border-white/10 p-4 absolute w-full top-[73px] left-0 z-40 shadow-xl backdrop-blur-xl bg-opacity-95">
             <a href="javascript:void(0)" onclick="navigateTo('home')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Home</a>
             <a href="javascript:void(0)" onclick="navigateTo('pricing')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Pricing</a>
+            <a href="javascript:void(0)" onclick="navigateTo('portal')" class="block py-3 px-2 text-emerald-400 hover:text-white border-b border-white/5 font-bold">Partner Portal</a>
             <a href="javascript:void(0)" onclick="navigateTo('platforms')" class="block py-3 px-2 text-purple-400 hover:text-white border-b border-white/5 font-bold">Platforms</a>
             <a href="javascript:void(0)" onclick="navigateTo('about')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">About</a>
             <a href="javascript:void(0)" onclick="navigateTo('blog')" class="block py-3 px-2 text-slate-400 hover:text-white border-b border-white/5">Blog</a>
@@ -192,22 +197,10 @@
             <div class="border-y border-white/5 bg-black/20 py-8 overflow-hidden relative">
                 <div class="flex whitespace-nowrap animate-scroll">
                     <div class="flex items-center gap-16 mx-8 text-slate-500 font-display font-bold text-xl uppercase tracking-widest">
-                        <span>Retail</span>
-                        <span>Dining</span>
-                        <span>Events</span>
-                        <span>Healthcare</span>
-                        <span>Real Estate</span>
-                        <span>Education</span>
-                        <span>Automotive</span>
+                        <span>Retail</span><span>Dining</span><span>Events</span><span>Healthcare</span><span>Real Estate</span><span>Education</span><span>Automotive</span>
                     </div>
                     <div class="flex items-center gap-16 mx-8 text-slate-500 font-display font-bold text-xl uppercase tracking-widest">
-                        <span>Retail</span>
-                        <span>Dining</span>
-                        <span>Events</span>
-                        <span>Healthcare</span>
-                        <span>Real Estate</span>
-                        <span>Education</span>
-                        <span>Automotive</span>
+                        <span>Retail</span><span>Dining</span><span>Events</span><span>Healthcare</span><span>Real Estate</span><span>Education</span><span>Automotive</span>
                     </div>
                 </div>
                 <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-brand-dark to-transparent z-10"></div>
@@ -353,6 +346,34 @@
             </section>
         </div>
         
+        <div id="pricing" class="page-section fade-in">
+             <div class="container mx-auto px-6 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Select your options below to get an instant quote.</p>
+                </div>
+                 <div class="w-full flex justify-center">
+                    <iframe 
+                        id="calc-frame"
+                        src="calculator.html" 
+                        class="w-full max-w-6xl border-0 rounded-2xl bg-transparent" 
+                        style="width: 1px; min-width: 100%;">
+                    </iframe>
+                </div>
+             </div>
+        </div>
+
+        <div id="portal" class="page-section fade-in">
+             <div class="w-full flex justify-center pb-20">
+                <iframe 
+                    id="portal-frame"
+                    src="portal.html" 
+                    class="w-full border-0 bg-transparent" 
+                    style="width: 1px; min-width: 100%; min-height: 90vh;">
+                </iframe>
+            </div>
+        </div>
+
         <div id="platforms" class="page-section fade-in">
             <div class="container mx-auto px-6 py-20">
                 <div class="text-center mb-16">
@@ -448,110 +469,78 @@
         </div>
 
         <div id="about" class="page-section fade-in">
-    <div class="container mx-auto px-6 py-20">
-        
-        <div class="text-center mb-16">
-            <div class="inline-block px-3 py-1 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold tracking-widest uppercase mb-4">
-                Our Story
-            </div>
-            <h1 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Redefining Local Visibility</h1>
-            <p class="text-slate-400 max-w-2xl mx-auto text-lg">
-                We don't just sell ad space. We sell <span class="text-white font-semibold">attention</span> in a distracted world.
-            </p>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
-            
-            <div class="space-y-6">
-                <div class="glass-panel p-8 rounded-2xl border-l-4 border-slate-600 hover:border-brand-accent transition-colors group">
-                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                        <span class="text-slate-500 group-hover:text-brand-accent transition-colors">01.</span> The Problem
-                    </h3>
-                    <p class="text-slate-400 leading-relaxed">
-                        Online ads are blocked or scrolled past. Traditional vinyl banners are expensive to print, slow to install, and fade quickly. Local businesses struggle to get noticed in a noisy digital world.
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center mb-16">
+                    <div class="inline-block px-3 py-1 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold tracking-widest uppercase mb-4">
+                        Our Story
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-6 text-white">Redefining Local Visibility</h1>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">
+                        We don't just sell ad space. We sell <span class="text-white font-semibold">attention</span> in a distracted world.
                     </p>
                 </div>
 
-                <div class="glass-panel p-8 rounded-2xl border-l-4 border-slate-600 hover:border-green-500 transition-colors group">
-                    <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                        <span class="text-slate-500 group-hover:text-green-500 transition-colors">02.</span> The Obsera Solution
-                    </h3>
-                    <p class="text-slate-400 leading-relaxed">
-                        We deploy high-definition digital screens in <strong>high-dwell zones</strong>—places where people actually stop and look, like waiting areas and busy junctions. We combine the physical impact of a billboard with the speed and agility of the internet.
+                <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+                    <div class="space-y-6">
+                        <div class="glass-panel p-8 rounded-2xl border-l-4 border-slate-600 hover:border-brand-accent transition-colors group">
+                            <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <span class="text-slate-500 group-hover:text-brand-accent transition-colors">01.</span> The Problem
+                            </h3>
+                            <p class="text-slate-400 leading-relaxed">
+                                Online ads are blocked or scrolled past. Traditional vinyl banners are expensive to print, slow to install, and fade quickly. Local businesses struggle to get noticed in a noisy digital world.
+                            </p>
+                        </div>
+
+                        <div class="glass-panel p-8 rounded-2xl border-l-4 border-slate-600 hover:border-green-500 transition-colors group">
+                            <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <span class="text-slate-500 group-hover:text-green-500 transition-colors">02.</span> The Obsera Solution
+                            </h3>
+                            <p class="text-slate-400 leading-relaxed">
+                                We deploy high-definition digital screens in <strong>high-dwell zones</strong>—places where people actually stop and look, like waiting areas and busy junctions. We combine the physical impact of a billboard with the speed and agility of the internet.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-brand-accent/20 to-purple-500/20 blur-[60px] rounded-full"></div>
+                        <div class="glass-panel p-8 rounded-2xl relative z-10 border border-white/10">
+                            <h2 class="text-2xl font-display font-bold text-white mb-6">Why Brands Choose Us</h2>
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-4 text-slate-300">
+                                    <div class="w-10 h-10 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    </div>
+                                    <span><strong>Zero Printing Costs:</strong> Upload and go live instantly.</span>
+                                </li>
+                                <li class="flex items-center gap-4 text-slate-300">
+                                    <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </div>
+                                    <span><strong>Hyper-Local Reach:</strong> Target specific communities.</span>
+                                </li>
+                                <li class="flex items-center gap-4 text-slate-300">
+                                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    </div>
+                                    <span><strong>Dynamic Content:</strong> Video attracts 400% more views.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center max-w-3xl mx-auto border-t border-white/5 pt-16">
+                    <h3 class="text-white font-display font-bold text-2xl mb-4">Our Vision</h3>
+                    <p class="text-slate-400 italic text-lg leading-relaxed">
+                        "To build the most trusted digital signage network in Kerala, empowering local businesses to compete with global brands through affordable, high-impact technology."
                     </p>
+                    <div class="mt-8">
+                        <button onclick="navigateTo('contact')" class="text-brand-accent hover:text-white font-semibold transition-colors flex items-center justify-center gap-2 mx-auto">
+                            Partner With Us <span aria-hidden="true">→</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div class="relative">
-                <div class="absolute inset-0 bg-gradient-to-r from-brand-accent/20 to-purple-500/20 blur-[60px] rounded-full"></div>
-                
-                <div class="glass-panel p-8 rounded-2xl relative z-10 border border-white/10">
-                    <h2 class="text-2xl font-display font-bold text-white mb-6">Why Brands Choose Us</h2>
-                    <ul class="space-y-4">
-                        <li class="flex items-center gap-4 text-slate-300">
-                            <div class="w-10 h-10 rounded-full bg-brand-accent/10 flex items-center justify-center text-brand-accent">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            </div>
-                            <span><strong>Zero Printing Costs:</strong> Upload and go live instantly.</span>
-                        </li>
-                        <li class="flex items-center gap-4 text-slate-300">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </div>
-                            <span><strong>Hyper-Local Reach:</strong> Target specific communities.</span>
-                        </li>
-                        <li class="flex items-center gap-4 text-slate-300">
-                            <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            </div>
-                            <span><strong>Dynamic Content:</strong> Video attracts 400% more views.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center max-w-3xl mx-auto border-t border-white/5 pt-16">
-            <h3 class="text-white font-display font-bold text-2xl mb-4">Our Vision</h3>
-            <p class="text-slate-400 italic text-lg leading-relaxed">
-                "To build the most trusted digital signage network in Kerala, empowering local businesses to compete with global brands through affordable, high-impact technology."
-            </p>
-            <div class="mt-8">
-                <button onclick="navigateTo('contact')" class="text-brand-accent hover:text-white font-semibold transition-colors flex items-center justify-center gap-2 mx-auto">
-                    Partner With Us <span aria-hidden="true">→</span>
-                </button>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-        
-
-        <div id="pricing" class="page-section fade-in">
-             <div class="container mx-auto px-6 py-12">
-                <div class="text-center mb-12">
-                    <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
-                    <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Select your options below to get an instant quote.</p>
-                </div>
-                
-             
-
-                 <div class="w-full flex justify-center">
-    <iframe 
-        id="calc-frame"
-        src="calculator.html" 
-        class="w-full max-w-6xl border-0 rounded-2xl bg-transparent" 
-        style="width: 1px; min-width: 100%;">
-    </iframe>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script> 
-<script>
-  // This initializes the resizer on the iframe with the ID 'calc-frame'
-  iFrameResize({ log: false }, '#calc-frame')
-</script>
-                 
-             </div>
         </div>
 
         <div id="blog-post-view" class="page-section fade-in hidden">
@@ -703,42 +692,41 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script> 
     <script>
-
-
-        
         // ================= SPA ROUTING LOGIC =================
         function navigateTo(pageId, addToHistory = true) {
-            // 1. Hide all pages
             document.querySelectorAll('.page-section').forEach(el => {
                 el.classList.remove('active');
             });
             
-            // 2. Show target page
             const target = document.getElementById(pageId);
             if(target) {
                 target.classList.add('active');
-                target.classList.remove('hidden'); // Ensure it's not hidden
+                target.classList.remove('hidden'); 
             }
 
-            // 3. Update Nav Active State
             document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('text-brand-accent');
+                el.classList.remove('text-brand-accent', 'text-emerald-400', 'text-purple-400');
+                
                 if(el.dataset.target === pageId) {
-                    el.classList.add('text-brand-accent');
+                    if (pageId === 'portal') el.classList.add('text-emerald-400');
+                    else if (pageId === 'platforms') el.classList.add('text-purple-400');
+                    else el.classList.add('text-brand-accent');
+                } else {
+                    // Restore original colors for special links when not active
+                    if (el.dataset.target === 'portal') el.classList.add('text-emerald-400');
+                    if (el.dataset.target === 'platforms') el.classList.add('text-purple-400');
                 }
             });
 
-            // 4. Close Mobile Menu
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
             }
 
-            // 5. Scroll to top
             window.scrollTo(0,0);
 
-            // 6. History State Management
             if (addToHistory) {
                 history.pushState({ pageId: pageId, type: 'page' }, null, `#${pageId}`);
             }
@@ -748,7 +736,6 @@
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
-        // Handle Browser Back Button
         window.addEventListener('popstate', function(event) {
             if (event.state && event.state.type === 'article') {
                 openBlogPost(event.state.postId, false);
@@ -758,13 +745,17 @@
             }
         });
 
-        // --- PASTE THE NEW CODE HERE ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Force "Home" section on every refresh
             navigateTo('home', false);
             history.replaceState({ pageId: 'home', type: 'page' }, null, window.location.pathname);
+            
+            // Initialize iFrames
+            const calcFrame = document.getElementById('calc-frame');
+            if(calcFrame) iFrameResize({ log: false, checkOrigin: false }, '#calc-frame');
+            
+            const portalFrame = document.getElementById('portal-frame');
+            if(portalFrame) iFrameResize({ log: false, checkOrigin: false }, '#portal-frame');
         });
-        // -------------------------------
 
         // ================= BLOG LOGIC =================
         const blogPosts = {
@@ -852,14 +843,6 @@
                 window.location.href = mailtoLink;
             });
         }
-
-        // In index.html
-document.addEventListener('DOMContentLoaded', () => {
-    const frame = document.getElementById('calc-frame');
-    if(frame) {
-        iFrameResize({ log: false, checkOrigin: false }, '#calc-frame');
-    }
-});
     </script>
     
     <script>
@@ -901,29 +884,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const STARTING_COUNT = 63521; 
 
     function loadSmartCounter() {
-        // Check if the user has visited before
         let currentCount = localStorage.getItem('site_visits');
 
         if (!currentCount) {
-            // First time visitor? Set to starting number
             currentCount = STARTING_COUNT;
         } else {
-            // Returning visitor? Fake a realistic increase
-            // Adds 1 visit for this user
             currentCount = parseInt(currentCount) + 1;
         }
 
-        // Save the new count so it remembers them next time
         localStorage.setItem('site_visits', currentCount);
 
-        // Display it with comma formatting (e.g., 63,522)
         const displayElement = document.getElementById('global-visit-counter');
         if (displayElement) {
             displayElement.innerText = currentCount.toLocaleString();
         }
     }
 
-    // Run immediately
     loadSmartCounter();
 </script>
 
