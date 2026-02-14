@@ -83,18 +83,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <div class="flex justify-between mb-2">
+                    <div class="flex justify-between mb-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">3. Duration</label>
                         <span class="text-sky-400 text-xs font-bold" id="dur-val">30s</span>
                     </div>
-                    <input type="range" id="duration" min="10" max="120" step="5" value="30" class="w-full" oninput="calculate()">
+                    <p class="text-[10px] text-slate-400 mb-3 italic">Shorter ads play more frequently!</p>
+                    <input type="range" id="duration" min="10" max="120" step="5" value="30" class="w-full mt-1" oninput="calculate()">
                 </div>
                 <div>
-                    <div class="flex justify-between mb-2">
+                    <div class="flex justify-between mb-2 mt-4 md:mt-0">
                         <label class="text-xs font-bold text-slate-500 uppercase">4. Campaign</label>
                         <span class="text-sky-400 text-xs font-bold" id="day-val">7 Days</span>
                     </div>
-                    <select id="days" class="w-full bg-slate-900/80 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-sky-400 transition-colors shadow-inner" onchange="toggleCustomDays()">
+                    <select id="days" class="w-full bg-slate-900/80 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-sky-400 transition-colors shadow-inner mt-2" onchange="toggleCustomDays()">
                         <option value="7">7 Days</option>
                         <option value="14">14 Days</option>
                         <option value="30">30 Days</option>
@@ -114,9 +115,9 @@
                     <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
                     <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">0</span></div>
                     
-                    <div class="hidden flex justify-between pt-2 border-t border-white/5">
+                    <div class="flex justify-between pt-2 border-t border-white/5">
                         <span class="text-slate-400">Est. Cost:</span>
-                        <span class="text-green-400 font-bold font-mono" id="res-cost">₹0</span>
+                        <span class="text-green-400 font-bold font-mono text-lg" id="res-cost">₹0</span>
                     </div>
                 </div>
             </div>
@@ -124,7 +125,7 @@
             <div class="mt-8">
                 <span class="text-[10px] text-slate-500 uppercase block mb-1">Estimated Playcount</span>
                 
-                <div class="text-4xl font-display font-bold text-sky-400 mb-2" id="total-plays-main">0</div>
+                <div class="text-4xl font-display font-bold text-sky-400 mb-2 transition-all duration-300" id="total-plays-main">0</div>
                 
                 <div id="plays-breakdown" class="mb-6 space-y-1 max-h-24 overflow-y-auto custom-scrollbar pr-2">
                     </div>
@@ -141,15 +142,18 @@
 
 <script>
     // --- Data & Configuration ---
-    const BASE_RATE = 99; 
+    // In Time-Share, BASE_RATE buys a "Time Block" (e.g., 6 minutes of airtime per hour). 
+    const BASE_RATE = 99; // Flat price per day per location
     const WHATSAPP_NUM = '919562551376';
-    const LOOPS_PER_HOUR = 12; // 60 mins / 5 min loop
     
-    // Add all network locations here
+    // The Time-Share Variable: How many seconds of airtime does a customer buy per hour?
+    // 360 seconds = 6 minutes of airtime per hour.
+    const AIRTIME_PER_HOUR = 360; 
+    
+    // Locations Array
     const LOCATIONS_DATA = [
         { id: 'uruvachal', name: 'Bilal Thattukada', hours: 17, isDefault: true, tag: '17h Active' },
         { id: 'medical', name: 'Medical College', hours: 24, isDefault: false, tag: '24h Active' },
-        // { id: 'ccd', name: 'Cafe Coffee Day', hours: 14, isDefault: false, tag: '14h Active' } // Example future location
     ];
 
     // --- Multi-Select UI Logic ---
@@ -160,27 +164,20 @@
     const selectedScreensDisplay = document.getElementById("selected-screens-display");
     const selectedScreensList = document.getElementById("selected-screens-list");
 
-    // Toggle Dropdown
     calcMultiSelectBtn.addEventListener("click", () => {
         calcMultiSelectList.classList.toggle("hidden");
         calcMultiSelectArrow.classList.toggle("rotate-180");
-        
-        // Let the iframe resizer know the dropdown opened
         if (window.parentIFrame) window.parentIFrame.size();
     });
 
-    // Close Dropdown when clicking outside
     document.addEventListener("click", (e) => {
         if (!calcMultiSelectBtn.contains(e.target) && !calcMultiSelectList.contains(e.target)) {
             calcMultiSelectList.classList.add("hidden");
             calcMultiSelectArrow.classList.remove("rotate-180");
-            
-            // Let the iframe resizer know the dropdown closed
             if (window.parentIFrame) window.parentIFrame.size();
         }
     });
 
-    // Build the Dropdown List
     window.onload = function() {
         let listHTML = '';
         LOCATIONS_DATA.forEach((loc) => {
@@ -204,7 +201,6 @@
         handleSelectionChange(); 
     };
 
-    // Update UI and trigger Calculation when checkboxes change
     function handleSelectionChange() {
         const checkboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const selectedCount = checkboxes.length;
@@ -219,7 +215,6 @@
             calcMultiSelectText.innerText = `${selectedCount} Location${selectedCount > 1 ? 's' : ''} Selected`;
             calcMultiSelectText.classList.replace("text-slate-400", "text-sky-400");
             
-            // Build the visual list of selected screens below the dropdown
             checkboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 listHTML += `
@@ -237,14 +232,10 @@
             selectedScreensDisplay.classList.remove("hidden");
         }
         
-        // Inform iframe resizer the layout changed
         if (window.parentIFrame) window.parentIFrame.size();
-
-        // Trigger the math calculation
         calculate(); 
     }
 
-    // --- Calculator Logic ---
     function toggleCustomDays() {
         const select = document.getElementById('days');
         const customInput = document.getElementById('custom-days-input');
@@ -257,6 +248,7 @@
         calculate();
     }
 
+    // --- NEW: TIME-SHARE CALCULATOR MATH ---
     function calculate() {
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const nodeCount = selectedCheckboxes.length;
@@ -271,11 +263,13 @@
             days = parseInt(daySelect.value);
         }
 
-        // Cost Math
+        // 1. Cost Math (Flat Rate based on Time Block, NOT duration)
         const typeMultiplier = isVideo ? 1 : 0.5;
-        const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
+        const cost = Math.round(BASE_RATE * days * nodeCount * typeMultiplier);
         
-        // Playcount Math
+        // 2. Playcount Math (Shorter duration = More plays inside the bought Time Block)
+        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / duration);
+        
         let totalPlays = 0;
         let breakdownHTML = '';
 
@@ -283,13 +277,13 @@
             selectedCheckboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 if (locData) {
-                    const screenPlays = LOOPS_PER_HOUR * locData.hours * days;
+                    const screenPlays = playsPerHour * locData.hours * days;
                     totalPlays += screenPlays;
                     
                     breakdownHTML += `
                         <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                            <span>${locData.name} (${locData.hours}h):</span>
-                            <span class="font-mono text-white">${screenPlays.toLocaleString()}</span>
+                            <span>${locData.name} (${playsPerHour}/hr):</span>
+                            <span class="font-mono text-white text-emerald-400 font-bold">${screenPlays.toLocaleString()}</span>
                         </div>
                     `;
                 }
@@ -305,7 +299,16 @@
         document.getElementById('res-screens').textContent = nodeCount;
         document.getElementById('res-cost').textContent = '₹' + (nodeCount > 0 && days > 0 ? cost.toLocaleString('en-IN') : '0');
         
-        document.getElementById('total-plays-main').textContent = totalPlays.toLocaleString();
+        // Animate the playcount for visual impact
+        const playcountEl = document.getElementById('total-plays-main');
+        playcountEl.style.transform = "scale(1.1)";
+        playcountEl.style.color = "#10b981"; // Flash green
+        setTimeout(() => {
+            playcountEl.style.transform = "scale(1)";
+            playcountEl.style.color = "#38bdf8"; // Back to blue
+        }, 300);
+        
+        playcountEl.textContent = totalPlays.toLocaleString();
         document.getElementById('plays-breakdown').innerHTML = breakdownHTML;
 
         // Button State
@@ -326,6 +329,10 @@
         const duration = document.getElementById('dur-val').textContent;
         const type = document.getElementById('res-format').textContent;
         
+        // Calculate plays/hr for the message
+        const durNumber = parseInt(duration.replace('s', ''));
+        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / durNumber);
+        
         let locsDetails = '';
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         
@@ -336,14 +343,15 @@
 
         selectedCheckboxes.forEach(cb => {
             const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
-            const plays = LOOPS_PER_HOUR * locData.hours * d;
+            const plays = playsPerHour * locData.hours * d;
             locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
         });
 
-        let msg = `*New Booking Inquiry (5-min Loop)*\n\n`;
+        let msg = `*New Booking Inquiry (Time-Share Block)*\n\n`;
         msg += `*Format:* ${type} (${duration})\n`;
+        msg += `*Frequency:* ${playsPerHour} plays per hour\n`;
         msg += `*Duration:* ${days}\n\n`;
-        msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
+        msg += `*Target Screens & Est. Plays:*\n${locsDetails}\n`;
         msg += `*Total Cost: ${cost}*\n\n`;
         msg += `I would like to proceed with this plan.`;
 
