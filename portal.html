@@ -46,14 +46,12 @@
     <style>
         body { background-color: #0f172a; color: white; }
         
-        /* Glass Effect */
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Grid Background */
         .bg-grid {
             background-size: 40px 40px;
             background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
@@ -62,7 +60,6 @@
             -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
         }
 
-        /* Animated Text Gradient */
         .text-gradient-animate {
             background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc, #38bdf8);
             background-size: 200% auto;
@@ -86,7 +83,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom smooth spinner */
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
             width: 48px;
@@ -97,7 +93,6 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
-        /* Fix native date/time/select colors in dark mode */
         select option { background-color: #1e293b; color: white; }
     </style>
 </head>
@@ -175,6 +170,37 @@
                             <input type="text" id="businessName" required class="w-full bg-brand-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:border-brand-accent focus:bg-brand-dark focus:outline-none transition-all shadow-inner" placeholder="e.g., Royal Mobiles">
                         </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Reply Via</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="contactMethod" value="WhatsApp" class="peer sr-only" checked>
+                                        <div class="text-center bg-brand-dark/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-green-500 peer-checked:text-green-400 peer-checked:bg-green-500/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                            WhatsApp
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="contactMethod" value="Email" class="peer sr-only">
+                                        <div class="text-center bg-brand-dark/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-brand-accent peer-checked:text-brand-accent peer-checked:bg-brand-accent/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                            Email
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="contactMethod" value="Other" class="peer sr-only">
+                                        <div class="text-center bg-brand-dark/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-purple-400 peer-checked:text-purple-400 peer-checked:bg-purple-500/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                            Other
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Info</label>
+                                <input type="text" id="contactDetails" required class="w-full bg-brand-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:border-brand-accent focus:bg-brand-dark focus:outline-none transition-all shadow-inner" placeholder="Number or Email">
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ad Duration</label>
                             <select id="duration" class="w-full bg-brand-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-brand-accent focus:bg-brand-dark focus:outline-none transition-all shadow-inner cursor-pointer appearance-none relative">
@@ -190,7 +216,7 @@
                                 <div class="px-4 py-8 pointer-events-none">
                                     <svg class="mx-auto h-10 w-10 text-brand-accent mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                                     <p class="text-sm text-white font-medium">Click to upload or drag and drop</p>
-                                    <p class="text-xs text-slate-500 mt-1">PNG, JPG max to 20MB (1920x1080 recommended)</p>
+                                    <p class="text-xs text-slate-500 mt-1">PNG, JPG up to 10MB (1920x1080 recommended)</p>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +240,7 @@
                     </div>
                     <h2 class="text-3xl font-display font-bold text-white mb-3">Upload Secure!</h2>
                     <p class="text-slate-300">Your campaign data has been safely transmitted to the Obsera Control Center.</p>
-                    <p class="text-slate-500 text-sm mt-2">We will notify you the moment your ad is broadcasting live.</p>
+                    <p class="text-slate-500 text-sm mt-2">We will notify you via your preferred contact method once your ad is live.</p>
                     <button onclick="location.reload()" class="mt-8 text-brand-accent font-bold px-8 py-3 border-2 border-brand-accent/50 rounded-xl hover:bg-brand-accent/10 transition-colors uppercase tracking-wider text-sm">Deploy Another</button>
                 </div>
 
@@ -223,7 +249,7 @@
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </div>
                     <h2 class="text-3xl font-display font-bold text-white mb-3">Transmission Failed</h2>
-                    <p class="text-slate-400">Connection interrupted. Please verify your file size and check your network.</p>
+                    <p class="text-slate-400">Connection interrupted. Please verify your file size is under 10MB and check your network.</p>
                     <button onclick="resetForm()" class="mt-8 bg-white/10 text-white font-bold px-8 py-3 rounded-xl hover:bg-white/20 transition-colors uppercase tracking-wider text-sm">Retry Upload</button>
                 </div>
 
@@ -262,9 +288,12 @@
     document.getElementById("adForm").addEventListener("submit", async function(e) {
         e.preventDefault(); 
         
+        // Grab the form values
         const businessName = document.getElementById("businessName").value;
         const duration = document.getElementById("duration").value;
         const fileInput = document.getElementById("fileInput").files[0];
+        const contactMethod = document.querySelector('input[name="contactMethod"]:checked').value;
+        const contactDetails = document.getElementById("contactDetails").value;
         
         if (!fileInput) return;
 
@@ -292,6 +321,7 @@
             // -- STEP 2: SEND EMAIL VIA FORMSUBMIT --
             loadingText.innerText = "Pinging Obsera Control Center... (2/2)";
 
+            // Update the email payload with the new contact info
             const emailResponse = await fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
                 method: "POST",
                 headers: { 
@@ -301,6 +331,8 @@
                 body: JSON.stringify({
                     _subject: `New Screen Ad Request: ${businessName}`,
                     "Business Name": businessName,
+                    "Preferred Contact": contactMethod,
+                    "Contact Details": contactDetails,
                     "Requested Duration": duration + " Seconds",
                     "Direct Poster Link": imageUrl, 
                     "_captcha": "false", 
