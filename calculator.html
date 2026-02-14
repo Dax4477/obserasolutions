@@ -144,8 +144,8 @@
     const BASE_RATE = 99; 
     const WHATSAPP_NUM = '919562551376';
     
-    // BUG FIX: Restored Standard 5-Minute Loop Math (12 Plays Per Hour)
-    const LOOPS_PER_HOUR = 12; 
+// Guarantee 360 seconds (6 minutes) of screen time per hour
+    const AIRTIME_PER_HOUR = 300;
     
     const LOCATIONS_DATA = [
         { 
@@ -265,7 +265,7 @@
         calculate();
     }
 
-    // --- BUG FIX: RESTORED STANDARD LOOP MATH ---
+// --- UPDATED CALCULATOR MATH ---
     function calculate() {
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const nodeCount = selectedCheckboxes.length;
@@ -284,7 +284,9 @@
         const typeMultiplier = isVideo ? 1 : 0.5;
         const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
         
-        // 2. Playcount Math (FIXED 12 LOOPS PER HOUR)
+        // 2. Playcount Math (Airtime Quota: Shorter ad = More plays)
+        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / duration);
+        
         let totalPlays = 0;
         let breakdownHTML = '';
 
@@ -292,12 +294,12 @@
             selectedCheckboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 if (locData) {
-                    const screenPlays = LOOPS_PER_HOUR * duration * locData.hours * days;
+                    const screenPlays = playsPerHour * locData.hours * days;
                     totalPlays += screenPlays;
                     
                     breakdownHTML += `
                         <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                            <span>${locData.name} (12/hr):</span>
+                            <span>${locData.name} (${playsPerHour}/hr):</span>
                             <span class="font-mono text-white text-emerald-400 font-bold">${screenPlays.toLocaleString()}</span>
                         </div>
                     `;
@@ -337,12 +339,16 @@
         }
     }
 
-    // --- BUG FIX: RESTORED STANDARD LOOP WHATSAPP MESSAGE ---
+    // --- UPDATED WHATSAPP BOOKING ---
     function sendWhatsApp() {
         const cost = document.getElementById('res-cost').textContent;
         const days = document.getElementById('day-val').textContent;
         const duration = document.getElementById('dur-val').textContent;
         const type = document.getElementById('res-format').textContent;
+        
+        // Calculate plays per hour dynamically for the message
+        const durNumber = parseInt(duration.replace('s', ''));
+        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / durNumber);
         
         let locsDetails = '';
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
@@ -354,14 +360,15 @@
 
         selectedCheckboxes.forEach(cb => {
             const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
-            const plays = LOOPS_PER_HOUR * locData.hours * d;
+            const plays = playsPerHour * locData.hours * d;
             locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
         });
 
-        let msg = `*New Booking Inquiry (Standard 5-Min Loop)*\n\n`;
+        let msg = `*New Booking Inquiry*\n\n`;
         msg += `*Format:* ${type} (${duration})\n`;
+        msg += `*Frequency:* ~${playsPerHour} plays per hour\n`;
         msg += `*Duration:* ${days}\n\n`;
-        msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
+        msg += `*Target Screens & Est. Plays:*\n${locsDetails}\n`;
         msg += `*Total Cost: ${cost}*\n\n`;
         msg += `I would like to proceed with this plan.`;
 
