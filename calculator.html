@@ -292,7 +292,7 @@
             selectedCheckboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 if (locData) {
-                    const screenPlays = LOOPS_PER_HOUR * locData.hours * days;
+                    const screenPlays = LOOPS_PER_HOUR * duration * locData.hours * days;
                     totalPlays += screenPlays;
                     
                     breakdownHTML += `
