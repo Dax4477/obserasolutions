@@ -131,9 +131,9 @@
                     <div class="bg-brand-dark/50 border border-white/5 rounded-xl p-4 mt-4 relative overflow-hidden">
                         <span class="text-[10px] text-brand-accent uppercase font-bold tracking-widest block mb-1">Currently Selected</span>
                         <h3 id="location-title-display" class="text-lg font-bold text-white">Bilal Thattukada</h3>
-                        <p id="location-description-display" class="text-sm text-slate-400 mt-1 transition-opacity duration-300">
+                        <div id="location-description-display" class="text-sm text-slate-400 mt-1 transition-opacity duration-300">
                             Uruvachal area • High footfall dining environment perfect for reaching local families and passing commuters.
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,10 +210,10 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Upload Poster</label>
-                            <div class="relative w-full border-2 border-dashed border-white/20 rounded-xl bg-brand-dark/30 hover:bg-brand-dark/50 hover:border-brand-accent/50 transition-all text-center group cursor-pointer overflow-hidden">
+                            <div class="relative w-full border-2 border-dashed border-white/20 rounded-xl bg-brand-dark/30 hover:bg-brand-dark/50 hover:border-brand-accent/50 transition-all text-center group cursor-pointer overflow-hidden min-h-[160px] flex items-center justify-center">
                                 <input type="file" id="fileInput" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                                 
-                                <div id="upload-ui" class="px-4 py-8 pointer-events-none transition-opacity duration-300">
+                                <div id="upload-ui" class="px-4 py-8 pointer-events-none transition-opacity duration-300 w-full">
                                     <svg class="mx-auto h-10 w-10 text-brand-accent mb-3 group-hover:scale-110 transition-transform" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                                     <p class="text-sm text-white font-medium">Click to upload or drag and drop</p>
                                     <p class="text-xs text-slate-500 mt-1">PNG, JPG up to 10MB (1920x1080 recommended)</p>
@@ -264,8 +264,6 @@
             </div>
         </div>
     </main>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.contentWindow.min.js"></script>
 
 <script>
     // --- 1. CONFIGURATION ---
@@ -319,7 +317,7 @@
     // Build the Dropdown List
     window.onload = function() {
         let listHTML = '';
-        locations.forEach((loc, index) => {
+        locations.forEach((loc) => {
             const checkedAttr = loc.isDefault ? 'checked' : '';
             listHTML += `
                 <label class="flex items-center gap-4 px-4 py-4 hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0 group">
@@ -360,13 +358,26 @@
                 
                 multiSelectText.innerText = selectedName;
                 titleDisplay.innerText = selectedName;
-                descDisplay.innerText = locData.desc;
+                descDisplay.innerHTML = locData.desc; // Reset to standard description
                 multiSelectText.classList.replace("text-slate-400", "text-white");
             } 
             else {
-                multiSelectText.innerText = `${selectedCount} Screens Selected`;
+                // MULTIPLE SCREENS SELECTED
+                const namesArray = Array.from(checkboxes).map(cb => cb.value);
+                const namesString = namesArray.join(", ");
+                
+                // Show names on the button (e.g., "2 Screens: Bilal, CCD")
+                multiSelectText.innerText = `${selectedCount} Screens: ${namesString}`;
                 titleDisplay.innerText = `Multiple Locations (${selectedCount})`;
-                descDisplay.innerHTML = "Your campaign will run <strong>simultaneously across multiple premium screens</strong> to maximize your regional impact and audience frequency.";
+                
+                // Build a bulleted list of the selected screens for the description box
+                let screensListHTML = `<p class="mb-3">Your campaign will broadcast simultaneously across:</p><ul class="space-y-2">`;
+                namesArray.forEach(name => {
+                    screensListHTML += `<li class="flex items-center gap-2 text-white"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]"></span> ${name}</li>`;
+                });
+                screensListHTML += `</ul>`;
+                
+                descDisplay.innerHTML = screensListHTML;
                 multiSelectText.classList.replace("text-slate-400", "text-white");
             }
             descDisplay.style.opacity = 1;
@@ -396,7 +407,7 @@
             return;
         }
         
-        // Join the selected locations with a comma (e.g. "Bilal Thattukada, Cafe Coffee Day")
+        // Join the selected locations with a comma
         const targetLocationsString = checkedBoxes.map(cb => cb.value).join(", ");
         
         const businessName = document.getElementById("businessName").value;
@@ -434,7 +445,7 @@
                 },
                 body: JSON.stringify({
                     _subject: `New Screen Ad Request: ${businessName}`,
-                    "Target Screens": targetLocationsString, // Sends all chosen screens!
+                    "Target Screens": targetLocationsString, 
                     "Business Name": businessName,
                     "Preferred Contact": contactMethod,
                     "Contact Details": contactDetails,
