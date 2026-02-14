@@ -87,7 +87,6 @@
                         <label class="text-xs font-bold text-slate-500 uppercase">3. Duration</label>
                         <span class="text-sky-400 text-xs font-bold" id="dur-val">30s</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 mb-3 italic">Shorter ads play more frequently!</p>
                     <input type="range" id="duration" min="10" max="120" step="5" value="30" class="w-full mt-1" oninput="calculate()">
                 </div>
                 <div>
@@ -141,12 +140,13 @@
     </div>
 
 <script>
-   // --- Data & Configuration ---
+    // --- Data & Configuration ---
     const BASE_RATE = 99; 
     const WHATSAPP_NUM = '919562551376';
-    const LOOPS_PER_HOUR = 12; // 60 mins / 5 min loop
     
-    // Add all network locations here
+    // BUG FIX: Restored Standard 5-Minute Loop Math (12 Plays Per Hour)
+    const LOOPS_PER_HOUR = 12; 
+    
     const LOCATIONS_DATA = [
         { 
             id: 'uruvachal', 
@@ -154,7 +154,7 @@
             hours: 17, 
             isDefault: true, 
             tag: '17h Active',
-            mapLink: 'https://maps.google.com/?q=Bilal+Thattukada+Uruvachal' // Replace with actual maps link
+            mapLink: 'https://maps.app.goo.gl/YourActualLinkHere' 
         },
         { 
             id: 'medical', 
@@ -162,7 +162,7 @@
             hours: 24, 
             isDefault: false, 
             tag: '24h Active',
-            mapLink: 'https://maps.google.com/?q=Kozhikode+Medical+College' // Replace with actual maps link
+            mapLink: 'https://maps.app.goo.gl/YourActualLinkHere'
         }
     ];
 
@@ -188,14 +188,13 @@
         }
     });
 
-// Build the Dropdown List
+    // Build the Dropdown List
     window.onload = function() {
         let listHTML = '';
         LOCATIONS_DATA.forEach((loc) => {
             const checkedAttr = loc.isDefault ? 'checked' : '';
             listHTML += `
                 <div class="flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group">
-                    
                     <label class="flex items-center gap-4 cursor-pointer flex-grow">
                         <div class="relative flex items-center justify-center shrink-0">
                             <input type="checkbox" value="${loc.id}" class="loc-calc-checkbox peer sr-only" onchange="handleSelectionChange()" ${checkedAttr}>
@@ -213,7 +212,6 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         Map
                     </a>
-                    
                 </div>
             `;
         });
@@ -224,7 +222,6 @@
     function handleSelectionChange() {
         const checkboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const selectedCount = checkboxes.length;
-        
         let listHTML = '';
 
         if (selectedCount === 0) {
@@ -268,7 +265,7 @@
         calculate();
     }
 
-    // --- NEW: TIME-SHARE CALCULATOR MATH ---
+    // --- BUG FIX: RESTORED STANDARD LOOP MATH ---
     function calculate() {
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const nodeCount = selectedCheckboxes.length;
@@ -283,14 +280,11 @@
             days = parseInt(daySelect.value);
         }
 
-        // 1. Cost Math (Flat Rate based on Time Block, NOT duration)
-      // Cost Math
+        // 1. Cost Math 
         const typeMultiplier = isVideo ? 1 : 0.5;
         const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
         
-        // 2. Playcount Math (Shorter duration = More plays inside the bought Time Block)
-        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / duration);
-        
+        // 2. Playcount Math (FIXED 12 LOOPS PER HOUR)
         let totalPlays = 0;
         let breakdownHTML = '';
 
@@ -298,12 +292,12 @@
             selectedCheckboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 if (locData) {
-                    const screenPlays = playsPerHour * locData.hours * days;
+                    const screenPlays = LOOPS_PER_HOUR * locData.hours * days;
                     totalPlays += screenPlays;
                     
                     breakdownHTML += `
                         <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                            <span>${locData.name} (${playsPerHour}/hr):</span>
+                            <span>${locData.name} (12/hr):</span>
                             <span class="font-mono text-white text-emerald-400 font-bold">${screenPlays.toLocaleString()}</span>
                         </div>
                     `;
@@ -323,10 +317,10 @@
         // Animate the playcount for visual impact
         const playcountEl = document.getElementById('total-plays-main');
         playcountEl.style.transform = "scale(1.1)";
-        playcountEl.style.color = "#10b981"; // Flash green
+        playcountEl.style.color = "#10b981"; 
         setTimeout(() => {
             playcountEl.style.transform = "scale(1)";
-            playcountEl.style.color = "#38bdf8"; // Back to blue
+            playcountEl.style.color = "#38bdf8"; 
         }, 300);
         
         playcountEl.textContent = totalPlays.toLocaleString();
@@ -343,16 +337,12 @@
         }
     }
 
-    // --- WhatsApp Booking ---
+    // --- BUG FIX: RESTORED STANDARD LOOP WHATSAPP MESSAGE ---
     function sendWhatsApp() {
         const cost = document.getElementById('res-cost').textContent;
         const days = document.getElementById('day-val').textContent;
         const duration = document.getElementById('dur-val').textContent;
         const type = document.getElementById('res-format').textContent;
-        
-        // Calculate plays/hr for the message
-        const durNumber = parseInt(duration.replace('s', ''));
-        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / durNumber);
         
         let locsDetails = '';
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
@@ -364,15 +354,14 @@
 
         selectedCheckboxes.forEach(cb => {
             const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
-            const plays = playsPerHour * locData.hours * d;
+            const plays = LOOPS_PER_HOUR * locData.hours * d;
             locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
         });
 
-        let msg = `*New Booking Inquiry (Time-Share Block)*\n\n`;
+        let msg = `*New Booking Inquiry (Standard 5-Min Loop)*\n\n`;
         msg += `*Format:* ${type} (${duration})\n`;
-        msg += `*Frequency:* ${playsPerHour} plays per hour\n`;
         msg += `*Duration:* ${days}\n\n`;
-        msg += `*Target Screens & Est. Plays:*\n${locsDetails}\n`;
+        msg += `*Locations & Est. Plays:*\n${locsDetails}\n`;
         msg += `*Total Cost: ${cost}*\n\n`;
         msg += `I would like to proceed with this plan.`;
 
