@@ -352,14 +352,15 @@
                     <h1 class="text-4xl md:text-5xl font-display font-bold mb-4 text-gradient-animate">Pricing Studio</h1>
                     <p class="text-slate-400 max-w-2xl mx-auto text-lg">Transparent pricing. No hidden fees. Select your options below to get an instant quote.</p>
                 </div>
-                 <div class="w-full flex justify-center">
-                    <iframe 
-                        id="calc-frame"
-                        src="calculator.html" 
-                        class="w-full max-w-6xl border-0 rounded-2xl bg-transparent" 
-                        style="width: 1px; min-width: 100%;">
-                    </iframe>
-                </div>
+                 <div class="w-full flex justify-center pb-20">
+    <iframe 
+        id="portal-frame"
+        src="portal.html" 
+        class="w-full border-0 bg-transparent" 
+        scrolling="no" 
+        style="width: 100%; min-height: 1100px; overflow: hidden;">
+    </iframe>
+</div>
              </div>
         </div>
 
@@ -745,17 +746,21 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            navigateTo('home', false);
-            history.replaceState({ pageId: 'home', type: 'page' }, null, window.location.pathname);
-            
-            // Initialize iFrames
-            const calcFrame = document.getElementById('calc-frame');
-            if(calcFrame) iFrameResize({ log: false, checkOrigin: false }, '#calc-frame');
-            
-            const portalFrame = document.getElementById('portal-frame');
-            if(portalFrame) iFrameResize({ log: false, checkOrigin: false }, '#portal-frame');
-        });
+document.addEventListener('DOMContentLoaded', () => {
+    navigateTo('home', false);
+    history.replaceState({ pageId: 'home', type: 'page' }, null, window.location.pathname);
+    
+    // Initialize iFrames with smarter height calculation
+    const calcFrame = document.getElementById('calc-frame');
+    if(calcFrame) {
+        iFrameResize({ log: false, checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#calc-frame');
+    }
+    
+    const portalFrame = document.getElementById('portal-frame');
+    if(portalFrame) {
+        iFrameResize({ log: false, checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#portal-frame');
+    }
+});
 
         // ================= BLOG LOGIC =================
         const blogPosts = {
