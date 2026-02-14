@@ -87,7 +87,7 @@
                         <label class="text-xs font-bold text-slate-500 uppercase">3. Duration</label>
                         <span class="text-sky-400 text-xs font-bold" id="dur-val">30s</span>
                     </div>
-                    <input type="range" id="duration" min="10" max="120" step="5" value="30" class="w-full mt-1" oninput="calculate()">
+                    <input type="range" id="duration" min="10" max="300" step="5" value="30" class="w-full mt-1" oninput="calculate()">
                 </div>
                 <div>
                     <div class="flex justify-between mb-2 mt-4 md:mt-0">
@@ -144,9 +144,8 @@
     const BASE_RATE = 99; // Base price for 30s
     const WHATSAPP_NUM = '919562551376';
     
-    // We guarantee 360 seconds (6 minutes) of screen time per hour.
-    // Shorter ads will divide into this time block more often!
-    const AIRTIME_PER_HOUR = 360; 
+    // Fixed Standard Loop: Every ad plays exactly once per 5 minutes
+    const LOOPS_PER_HOUR = 12; 
     
     // Add all network locations here
     const LOCATIONS_DATA = [
@@ -266,7 +265,7 @@
         calculate();
     }
 
-    // --- DYNAMIC CALCULATOR MATH ---
+    // --- STRICT 5-MINUTE LOOP CALCULATOR MATH ---
     function calculate() {
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         const nodeCount = selectedCheckboxes.length;
@@ -281,13 +280,11 @@
             days = parseInt(daySelect.value);
         }
 
-        // 1. Cost Math 
+        // 1. Cost Math (Changes based on duration)
         const typeMultiplier = isVideo ? 1 : 0.5;
         const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
         
-        // 2. Playcount Math (Dynamic division based on duration)
-        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / duration);
-        
+        // 2. Playcount Math (FIXED at 12 loops per hour)
         let totalPlays = 0;
         let breakdownHTML = '';
 
@@ -295,12 +292,13 @@
             selectedCheckboxes.forEach(cb => {
                 const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
                 if (locData) {
-                    const screenPlays = playsPerHour * locData.hours * days;
+                    // Plays = 12 loops * Active Hours * Days
+                    const screenPlays = LOOPS_PER_HOUR * locData.hours * days;
                     totalPlays += screenPlays;
                     
                     breakdownHTML += `
                         <div class="flex justify-between text-xs text-slate-400 border-b border-white/5 pb-1 last:border-0">
-                            <span>${locData.name} (${playsPerHour}/hr):</span>
+                            <span>${locData.name} (12/hr):</span>
                             <span class="font-mono text-white text-emerald-400 font-bold">${screenPlays.toLocaleString()}</span>
                         </div>
                     `;
@@ -346,10 +344,6 @@
         const duration = document.getElementById('dur-val').textContent;
         const type = document.getElementById('res-format').textContent;
         
-        // Calculate plays per hour dynamically so the WhatsApp message matches the UI perfectly
-        const durNumber = parseInt(duration.replace('s', ''));
-        const playsPerHour = Math.floor(AIRTIME_PER_HOUR / durNumber);
-        
         let locsDetails = '';
         const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
         
@@ -360,13 +354,14 @@
 
         selectedCheckboxes.forEach(cb => {
             const locData = LOCATIONS_DATA.find(l => l.id === cb.value);
-            const plays = playsPerHour * locData.hours * d;
+            // WhatsApp message calculates exactly 12 plays per hour
+            const plays = LOOPS_PER_HOUR * locData.hours * d;
             locsDetails += `- ${locData.name}: ~${plays.toLocaleString()} plays\n`;
         });
 
         let msg = `*New Booking Inquiry*\n\n`;
         msg += `*Format:* ${type} (${duration})\n`;
-        msg += `*Frequency:* ~${playsPerHour} plays per hour\n`;
+        msg += `*Frequency:* 12 plays per hour (5-min loop)\n`;
         msg += `*Duration:* ${days}\n\n`;
         msg += `*Target Screens & Est. Plays:*\n${locsDetails}\n`;
         msg += `*Total Cost: ${cost}*\n\n`;
