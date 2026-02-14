@@ -264,8 +264,9 @@
         }
 
         // 1. Cost Math (Flat Rate based on Time Block, NOT duration)
+      // Cost Math
         const typeMultiplier = isVideo ? 1 : 0.5;
-        const cost = Math.round(BASE_RATE * days * nodeCount * typeMultiplier);
+        const cost = Math.round((BASE_RATE / 30) * duration * days * nodeCount * typeMultiplier);
         
         // 2. Playcount Math (Shorter duration = More plays inside the bought Time Block)
         const playsPerHour = Math.floor(AIRTIME_PER_HOUR / duration);
