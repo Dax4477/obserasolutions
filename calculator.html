@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Obsera Pricing Calculator</title>
+    <title>Obsera Pricing Calculator & Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -30,113 +30,128 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
         
         select option { background-color: #1e293b; color: white; }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border-left-color: #38bdf8;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="p-2 md:p-6 overflow-hidden">
 
-    <div class="glass-panel rounded-2xl p-6 md:p-8 w-full max-w-5xl shadow-2xl grid lg:grid-cols-12 gap-8 mx-auto">
-        <div class="lg:col-span-7 space-y-6">
-            <h2 class="text-2xl font-display font-bold text-white mb-4">Campaign Estimator</h2>
-            
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex justify-between">
-                    <span>1. Select Locations</span>
-                    <span class="text-emerald-400 flex items-center gap-1 font-normal"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Live Network</span>
-                </label>
+    <div id="main-container" class="glass-panel rounded-2xl p-6 md:p-8 w-full max-w-5xl shadow-2xl mx-auto relative overflow-hidden transition-all duration-500">
+        
+        <div class="grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7 space-y-6">
+                <h2 class="text-2xl font-display font-bold text-white mb-4">Campaign Estimator</h2>
                 
-                <div class="relative" id="calcMultiSelectContainer">
-                    <button type="button" id="calcMultiSelectBtn" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-brand-accent focus:outline-none transition-all shadow-inner flex justify-between items-center text-sm font-bold hover:bg-slate-800">
-                        <span id="calcMultiSelectText" class="truncate pr-4 text-sky-400">Loading locations...</span>
-                        <svg class="w-5 h-5 text-slate-400 transform transition-transform duration-300 shrink-0" id="calcMultiSelectArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    
-                    <div id="calcMultiSelectList" class="hidden absolute top-[calc(100%+8px)] left-0 w-full bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
-                        </div>
-                </div>
-
-                <div id="selected-screens-display" class="mt-4 p-4 rounded-xl border border-white/5 bg-white/5 hidden transition-opacity duration-300">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest block mb-2">Targeting:</span>
-                    <ul id="selected-screens-list" class="space-y-2">
-                        </ul>
-                </div>
-            </div>
-
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">2. Ad Format</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="ad-type" value="video" class="hidden peer" checked onchange="calculate()">
-                        <div class="p-3 rounded-xl border border-white/10 bg-slate-900/50 text-center peer-checked:border-sky-400 peer-checked:bg-sky-400/10 transition-all shadow-inner">
-                            <span class="text-sm font-bold block">Video Ad</span>
-                            <span class="text-[10px] text-slate-400">Full Motion</span>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="ad-type" value="poster" class="hidden peer" onchange="calculate()">
-                        <div class="p-3 rounded-xl border border-white/10 bg-slate-900/50 text-center peer-checked:border-sky-400 peer-checked:bg-sky-400/10 transition-all shadow-inner">
-                            <span class="text-sm font-bold block">Poster Ad</span>
-                            <span class="text-[10px] text-green-400">50% Off</span>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <div class="flex justify-between mb-1">
-                        <label class="text-xs font-bold text-slate-500 uppercase">3. Duration</label>
-                        <span class="text-sky-400 text-xs font-bold" id="dur-val">30s</span>
-                    </div>
-                    <input type="range" id="duration" min="10" max="300" step="5" value="30" class="w-full mt-1" oninput="calculate()">
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2 mt-4 md:mt-0">
-                        <label class="text-xs font-bold text-slate-500 uppercase">4. Campaign</label>
-                        <span class="text-sky-400 text-xs font-bold" id="day-val">7 Days</span>
-                    </div>
-                    <select id="days" class="w-full bg-slate-900/80 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-sky-400 transition-colors shadow-inner mt-2" onchange="toggleCustomDays()">
-                        <option value="7">7 Days</option>
-                        <option value="14">14 Days</option>
-                        <option value="30">30 Days</option>
-                        <option value="90">3 Months</option>
-                        <option value="custom">Custom...</option>
-                    </select>
-                    <input type="number" id="custom-days-input" placeholder="Enter days" class="hidden mt-2 w-full bg-slate-900/80 border border-sky-400 rounded-lg p-2 text-sm text-white outline-none" min="1" oninput="calculate()">
-                </div>
-            </div>
-        </div>
-
-        <div class="lg:col-span-5 bg-slate-900/80 rounded-xl p-6 border border-white/10 flex flex-col justify-between">
-            <div>
-                <h3 class="text-sm font-bold uppercase text-slate-500 mb-6 border-b border-white/5 pb-2">Summary</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between"><span class="text-slate-400">Format:</span><span id="res-format" class="text-white font-mono">Video</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">0</span></div>
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex justify-between">
+                        <span>1. Select Locations</span>
+                        <span class="text-emerald-400 flex items-center gap-1 font-normal"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Live Network</span>
+                    </label>
                     
-                    <div class="flex justify-between pt-2 border-t border-white/5">
-                        <span class="text-slate-400">Est. Cost:</span>
-                        <span class="text-green-400 font-bold font-mono text-lg" id="res-cost">₹0</span>
+                    <div class="relative" id="calcMultiSelectContainer">
+                        <button type="button" id="calcMultiSelectBtn" class="w-full bg-slate-900/80 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-brand-accent focus:outline-none transition-all shadow-inner flex justify-between items-center text-sm font-bold hover:bg-slate-800">
+                            <span id="calcMultiSelectText" class="truncate pr-4 text-sky-400">Loading locations...</span>
+                            <svg class="w-5 h-5 text-slate-400 transform transition-transform duration-300 shrink-0" id="calcMultiSelectArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        
+                        <div id="calcMultiSelectList" class="hidden absolute top-[calc(100%+8px)] left-0 w-full bg-[#1e293b] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
+                            </div>
+                    </div>
+
+                    <div id="selected-screens-display" class="mt-4 p-4 rounded-xl border border-white/5 bg-white/5 hidden transition-opacity duration-300">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest block mb-2">Targeting:</span>
+                        <ul id="selected-screens-list" class="space-y-2"></ul>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">2. Ad Format</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ad-type" value="video" class="hidden peer" checked onchange="calculate()">
+                            <div class="p-3 rounded-xl border border-white/10 bg-slate-900/50 text-center peer-checked:border-sky-400 peer-checked:bg-sky-400/10 transition-all shadow-inner">
+                                <span class="text-sm font-bold block">Video Ad</span>
+                                <span class="text-[10px] text-slate-400">Full Motion</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="ad-type" value="poster" class="hidden peer" onchange="calculate()">
+                            <div class="p-3 rounded-xl border border-white/10 bg-slate-900/50 text-center peer-checked:border-sky-400 peer-checked:bg-sky-400/10 transition-all shadow-inner">
+                                <span class="text-sm font-bold block">Poster Ad</span>
+                                <span class="text-[10px] text-green-400">50% Off</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-xs font-bold text-slate-500 uppercase">3. Duration</label>
+                            <span class="text-sky-400 text-xs font-bold" id="dur-val">30s</span>
+                        </div>
+                        <input type="range" id="duration" min="10" max="300" step="5" value="30" class="w-full mt-1" oninput="calculate()">
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2 mt-4 md:mt-0">
+                            <label class="text-xs font-bold text-slate-500 uppercase">4. Campaign</label>
+                            <span class="text-sky-400 text-xs font-bold" id="day-val">7 Days</span>
+                        </div>
+                        <select id="days" class="w-full bg-slate-900/80 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-sky-400 transition-colors shadow-inner mt-2" onchange="toggleCustomDays()">
+                            <option value="7">7 Days</option>
+                            <option value="14">14 Days</option>
+                            <option value="30">30 Days</option>
+                            <option value="90">3 Months</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                        <input type="number" id="custom-days-input" placeholder="Enter days" class="hidden mt-2 w-full bg-slate-900/80 border border-sky-400 rounded-lg p-2 text-sm text-white outline-none" min="1" oninput="calculate()">
                     </div>
                 </div>
             </div>
 
-            <div class="mt-8">
-                <span class="text-[10px] text-slate-500 uppercase block mb-1">Estimated Playcount</span>
-                
-                <div class="text-4xl font-display font-bold text-sky-400 mb-2 transition-all duration-300" id="total-plays-main">0</div>
-                
-                <div id="plays-breakdown" class="mb-6 space-y-1 max-h-24 overflow-y-auto custom-scrollbar pr-2">
+            <div class="lg:col-span-5 bg-slate-900/80 rounded-xl p-6 border border-white/10 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-bold uppercase text-slate-500 mb-6 border-b border-white/5 pb-2">Summary</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span class="text-slate-400">Format:</span><span id="res-format" class="text-white font-mono">Video</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Duration:</span><span id="res-dur" class="text-white font-mono">30s</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Screens:</span><span id="res-screens" class="text-white font-mono">0</span></div>
+                        
+                        <div class="flex justify-between pt-2 border-t border-white/5">
+                            <span class="text-slate-400">Est. Cost:</span>
+                            <span class="text-green-400 font-bold font-mono text-lg" id="res-cost">₹0</span>
+                        </div>
                     </div>
-                
-                <button onclick="sendWhatsApp()" id="book-btn" class="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 text-white shadow-lg shadow-green-900/20">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </div>
+
+                <div class="mt-8">
+                    <span class="text-[10px] text-slate-500 uppercase block mb-1">Estimated Playcount</span>
+                    
+                    <div class="text-4xl font-display font-bold text-sky-400 mb-2 transition-all duration-300" id="total-plays-main">0</div>
+                    
+                    <div id="plays-breakdown" class="mb-6 space-y-1 max-h-24 overflow-y-auto custom-scrollbar pr-2"></div>
+                    
+                    <button onclick="sendWhatsApp()" id="book-btn" class="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 text-white shadow-lg shadow-green-900/20">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                     </svg>
                     Book via WhatsApp
                 </button>
 
-                <button onclick="openPortal()" id="deploy-btn" class="hidden w-full py-3 mt-3 bg-sky-400 hover:bg-sky-300 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 text-slate-900 shadow-lg shadow-sky-400/20">
+                <button onclick="toggleUploadSection()" id="deploy-btn" class="hidden w-full py-3 mt-3 bg-sky-400 hover:bg-sky-300 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 text-slate-900 shadow-lg shadow-sky-400/20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                     </svg>
@@ -144,6 +159,107 @@
                 </button>
             </div>
         </div>
+
+        <div id="upload-section" class="hidden lg:col-span-12 mt-10 pt-10 border-t border-white/10 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-display font-bold text-white uppercase tracking-wide">Complete Campaign Setup</h2>
+                <button onclick="toggleUploadSection()" class="text-slate-400 hover:text-white text-sm flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Close
+                </button>
+            </div>
+            
+            <form id="adForm" class="grid lg:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Your Business Name</label>
+                        <input type="text" id="businessName" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:border-brand-accent focus:bg-slate-900 focus:outline-none transition-all shadow-inner" placeholder="e.g., Royal Mobiles">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Reply Via</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="contactMethod" value="WhatsApp" class="peer sr-only" checked>
+                                <div class="text-center bg-slate-900/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-emerald-500 peer-checked:text-emerald-400 peer-checked:bg-emerald-500/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                    WhatsApp
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="contactMethod" value="Email" class="peer sr-only">
+                                <div class="text-center bg-slate-900/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-brand-accent peer-checked:text-brand-accent peer-checked:bg-brand-accent/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                    Email
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="contactMethod" value="Other" class="peer sr-only">
+                                <div class="text-center bg-slate-900/50 border border-white/10 rounded-xl py-3 text-slate-400 peer-checked:border-purple-400 peer-checked:text-purple-400 peer-checked:bg-purple-500/10 transition-all text-xs font-bold uppercase tracking-wider">
+                                    Other
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Info</label>
+                        <input type="text" id="contactDetails" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:border-brand-accent focus:bg-slate-900 focus:outline-none transition-all shadow-inner" placeholder="Number or Email">
+                    </div>
+                </div>
+
+                <div class="space-y-6 flex flex-col">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Upload Poster</label>
+                        <div class="relative w-full border-2 border-dashed border-white/20 rounded-xl bg-slate-900/30 hover:bg-slate-900/50 hover:border-brand-accent/50 transition-all text-center group cursor-pointer overflow-hidden min-h-[180px] flex items-center justify-center flex-grow">
+                            <input type="file" id="fileInput" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            
+                            <div id="upload-ui" class="px-4 py-8 pointer-events-none transition-opacity duration-300 w-full">
+                                <svg class="mx-auto h-10 w-10 text-brand-accent mb-3 group-hover:scale-110 transition-transform" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                <p class="text-sm text-white font-medium">Click to upload or drag and drop</p>
+                                <p class="text-xs text-slate-500 mt-1">PNG, JPG up to 10MB (1920x1080 recommended)</p>
+                            </div>
+
+                            <div id="image-preview-container" class="hidden absolute inset-0 w-full h-full bg-black/50 pointer-events-none p-2">
+                                <img id="image-preview" src="#" alt="Ad Preview" class="w-full h-full object-contain drop-shadow-xl rounded-lg">
+                                <div class="absolute bottom-2 left-0 w-full text-center">
+                                    <span class="bg-black/80 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-md border border-white/10 uppercase tracking-widest font-bold shadow-lg">Click to change poster</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-accent text-slate-900 font-bold py-4 rounded-xl hover:bg-brand-glow transition-all hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] uppercase tracking-widest text-sm mt-auto relative overflow-hidden group">
+                        <span class="relative z-10">Deploy Campaign</span>
+                        <div class="absolute inset-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="loadingScreen" class="hidden absolute inset-0 bg-[#0f172a]/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center z-50 fade-in">
+            <div class="spinner mb-6"></div>
+            <h2 class="text-2xl font-display font-bold text-white mb-2 uppercase tracking-wide">Processing</h2>
+            <p id="loadingText" class="text-brand-accent font-medium text-lg animate-pulse">Initializing connection...</p>
+            <p class="text-slate-400 text-sm mt-4">Please keep this window open.</p>
+        </div>
+
+        <div id="statusMessage" class="hidden absolute inset-0 bg-[#0f172a]/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center z-50 fade-in border-t-4 border-emerald-500">
+            <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-3xl font-display font-bold text-white mb-3">Upload Secure!</h2>
+            <p class="text-slate-300">Your campaign data has been safely transmitted to the Obsera Control Center.</p>
+            <p class="text-slate-500 text-sm mt-2">We will notify you via your preferred contact method once your ad is live.</p>
+            <button onclick="location.reload()" class="mt-8 text-brand-accent font-bold px-8 py-3 border-2 border-brand-accent/50 rounded-xl hover:bg-brand-accent/10 transition-colors uppercase tracking-wider text-sm">Deploy Another</button>
+        </div>
+
+        <div id="errorMessage" class="hidden absolute inset-0 bg-[#0f172a]/95 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center z-50 fade-in border-t-4 border-red-500">
+            <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center text-red-400 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            <h2 class="text-3xl font-display font-bold text-white mb-3">Transmission Failed</h2>
+            <p class="text-slate-400">Connection interrupted. Please verify your file size is under 10MB and check your network.</p>
+            <button onclick="resetForm()" class="mt-8 bg-white/10 text-white font-bold px-8 py-3 rounded-xl hover:bg-white/20 transition-colors uppercase tracking-wider text-sm">Retry Upload</button>
+        </div>
+
     </div>
 
 <script>
@@ -151,6 +267,8 @@
     const BASE_RATE = 99; // Base price for 30s
     const WHATSAPP_NUM = '919562551376';
     const LOOPS_PER_HOUR = 12; // A fixed 5-minute loop
+    const IMGBB_API_KEY = "6aa95dc0f064beb2af336e93b2833e13"; 
+    const TARGET_EMAIL = "contact.obserasolutions@gmail.com";
     
     const LOCATIONS_DATA = [
         { 
@@ -332,11 +450,13 @@
         // Button States
         const btn = document.getElementById('book-btn');
         const deployBtn = document.getElementById('deploy-btn');
+        const uploadSection = document.getElementById('upload-section');
         
         if(nodeCount === 0 || days === 0) {
             btn.style.opacity = '0.5';
             btn.style.pointerEvents = 'none';
             deployBtn.classList.add('hidden');
+            if(!uploadSection.classList.contains('hidden')) toggleUploadSection();
         } else {
             btn.style.opacity = '1';
             btn.style.pointerEvents = 'auto';
@@ -346,12 +466,139 @@
                 deployBtn.classList.remove('hidden');
             } else {
                 deployBtn.classList.add('hidden');
+                if(!uploadSection.classList.contains('hidden')) toggleUploadSection();
             }
         }
-        
-        // Tell iframe resizer that a button may have been added/removed
         if (window.parentIFrame) window.parentIFrame.size();
     }
+
+    // --- EXPAND UPLOAD SECTION ---
+    function toggleUploadSection() {
+        const section = document.getElementById('upload-section');
+        section.classList.toggle('hidden');
+        
+        // Scroll slightly down to show the new section
+        if(!section.classList.contains('hidden')) {
+            setTimeout(() => {
+                // If in iframe, tell parent to scroll. If standalone, scroll self.
+                if('parentIFrame' in window) {
+                    window.parentIFrame.scrollToOffset(0, 300);
+                } else {
+                    window.scrollBy({ top: 300, behavior: 'smooth' });
+                }
+            }, 100);
+        }
+        
+        if (window.parentIFrame) window.parentIFrame.size();
+    }
+
+    // --- IMAGE PREVIEW ---
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const uploadUi = document.getElementById('upload-ui');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview');
+
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                uploadUi.classList.add('opacity-0');
+                setTimeout(() => {
+                    uploadUi.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                }, 300); 
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // --- FORM SUBMIT (PORTAL LOGIC) ---
+    const loadingScreen = document.getElementById("loadingScreen");
+    const statusMessage = document.getElementById("statusMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const loadingText = document.getElementById("loadingText");
+
+    function resetForm() {
+        errorMessage.classList.add("hidden");
+        loadingScreen.classList.add("hidden");
+    }
+
+    document.getElementById("adForm").addEventListener("submit", async function(e) {
+        e.preventDefault(); 
+        
+        // Grab form values
+        const businessName = document.getElementById("businessName").value;
+        const contactMethod = document.querySelector('input[name="contactMethod"]:checked').value;
+        const contactDetails = document.getElementById("contactDetails").value;
+        const fileInput = document.getElementById("fileInput").files[0];
+        
+        // Grab current Calculator states
+        const cost = document.getElementById('res-cost').textContent;
+        const days = document.getElementById('day-val').textContent;
+        const duration = document.getElementById('res-dur').textContent;
+        const format = document.getElementById('res-format').textContent;
+        
+        const selectedCheckboxes = document.querySelectorAll('.loc-calc-checkbox:checked');
+        const targetLocationsString = Array.from(selectedCheckboxes).map(cb => {
+            return LOCATIONS_DATA.find(l => l.id === cb.value).name;
+        }).join(", ");
+
+        if (!fileInput) return;
+
+        loadingScreen.classList.remove("hidden");
+
+        try {
+            // 1. UPLOAD TO IMGBB
+            loadingText.innerText = "Encrypting & Uploading Poster... (1/2)";
+            const formData = new FormData();
+            formData.append("image", fileInput);
+            
+            const imgResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const imgData = await imgResponse.json();
+            if (!imgData.success) throw new Error("Image upload failed");
+            const imageUrl = imgData.data.url; 
+
+            // 2. SEND EMAIL
+            loadingText.innerText = "Pinging Obsera Control Center... (2/2)";
+            const emailResponse = await fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _subject: `New Direct Poster Upload: ${businessName}`,
+                    "Target Screens": targetLocationsString, 
+                    "Campaign Format": format,
+                    "Campaign Duration": days,
+                    "Slot Length": duration,
+                    "Estimated Cost": cost,
+                    "Business Name": businessName,
+                    "Preferred Contact": contactMethod,
+                    "Contact Details": contactDetails,
+                    "Direct Poster Link": imageUrl, 
+                    "_captcha": "false", 
+                    "_template": "table" 
+                })
+            });
+
+            const emailData = await emailResponse.json();
+            if (!emailData.success) throw new Error("Email sending failed");
+
+            // 3. SHOW SUCCESS
+            loadingScreen.classList.add("hidden");
+            statusMessage.classList.remove("hidden");
+
+        } catch (error) {
+            console.error(error);
+            loadingScreen.classList.add("hidden");
+            errorMessage.classList.remove("hidden");
+        }
+    });
 
     // --- WHATSAPP BOOKING ---
     function sendWhatsApp() {
@@ -382,16 +629,6 @@
         msg += `I would like to proceed with this plan.`;
 
         window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    // --- OPEN PORTAL ROUTING ---
-    function openPortal() {
-        if (window.parent && window.parent.navigateTo) {
-            window.parent.navigateTo('portal');
-        } else {
-            // Fallback just in case they opened calculator.html directly
-            window.location.href = 'portal.html'; 
-        }
     }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.contentWindow.min.js"></script>
