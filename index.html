@@ -365,13 +365,13 @@
         </div>
 
 <div id="portal" class="page-section fade-in">
-             <div class="w-full flex justify-center pb-20">
+             <div class="w-full flex justify-center">
                 <iframe 
                     id="portal-frame"
                     src="portal.html" 
                     class="w-full border-0 bg-transparent" 
                     scrolling="no" 
-                    style="width: 100%; min-height: 1100px; overflow: hidden;">
+                    style="width: 100%; overflow: hidden;">
                 </iframe>
             </div>
         </div>
@@ -765,9 +765,14 @@ document.addEventListener('DOMContentLoaded', () => {
         iFrameResize({ log: false, checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#calc-frame');
     }
     
-    const portalFrame = document.getElementById('portal-frame');
+const portalFrame = document.getElementById('portal-frame');
     if(portalFrame) {
-        iFrameResize({ log: false, checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#portal-frame');
+        iFrameResize({ 
+            log: false, 
+            checkOrigin: false, 
+            heightCalculationMethod: 'taggedElement',
+            tolerance: 10 
+        }, '#portal-frame');
     }
 });
 
