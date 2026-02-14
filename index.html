@@ -364,13 +364,14 @@
              </div>
         </div>
 
-        <div id="portal" class="page-section fade-in">
+<div id="portal" class="page-section fade-in">
              <div class="w-full flex justify-center pb-20">
                 <iframe 
                     id="portal-frame"
                     src="portal.html" 
                     class="w-full border-0 bg-transparent" 
-                    style="width: 1px; min-width: 100%; min-height: 90vh;">
+                    scrolling="no" 
+                    style="width: 100%; min-height: 1100px; overflow: hidden;">
                 </iframe>
             </div>
         </div>
@@ -695,7 +696,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script> 
     <script>
-        // ================= SPA ROUTING LOGIC =================
+// ================= SPA ROUTING LOGIC =================
         function navigateTo(pageId, addToHistory = true) {
             document.querySelectorAll('.page-section').forEach(el => {
                 el.classList.remove('active');
@@ -705,6 +706,15 @@
             if(target) {
                 target.classList.add('active');
                 target.classList.remove('hidden'); 
+                
+                // --- CRUCIAL FIX FOR IFRAME CUTOFF ---
+                // Tell the iframe to recalculate its height right after it becomes visible
+                const iframe = target.querySelector('iframe');
+                if (iframe && iframe.iFrameResizer) {
+                    setTimeout(() => { 
+                        iframe.iFrameResizer.resize(); 
+                    }, 50); // 50ms delay ensures the browser has drawn the page first
+                }
             }
 
             document.querySelectorAll('.nav-item').forEach(el => {
@@ -732,7 +742,6 @@
                 history.pushState({ pageId: pageId, type: 'page' }, null, `#${pageId}`);
             }
         }
-
         function toggleMobileMenu() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
