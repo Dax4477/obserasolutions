@@ -9,6 +9,25 @@
     <style>
         body { font-family: 'Roboto', sans-serif; }
         h1, h2, h3 { font-family: 'Oswald', sans-serif; }
+        
+        /* Custom smooth spinner animation */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border-left-color: #1e40af; /* Tailwind blue-800 */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
@@ -25,8 +44,7 @@
         <div class="space-y-6">
             <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-800">
                 <h2 class="text-2xl font-bold mb-2 uppercase text-gray-900">Where Your Ad Shows</h2>
-                
-                <p class="text-gray-600 leading-relaxed mt-4">
+                <p class="text-gray-600 leading-relaxed mt-2">
                     Your advertisement will be displayed on the high-definition digital menu screen located inside <strong>Bilal Thattukada</strong>. This screen is viewed by hundreds of daily walk-in customers while they wait for their orders.
                 </p>
             </div>
@@ -50,57 +68,84 @@
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-xl shadow-lg relative">
+        <div class="bg-white p-8 rounded-xl shadow-lg relative min-h-[400px] flex flex-col justify-center">
             
-            <div id="statusMessage" class="hidden absolute inset-0 bg-white rounded-xl flex flex-col items-center justify-center p-8 text-center z-10">
-                <div class="text-green-500 text-6xl mb-4">✓</div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Successfully Submitted!</h2>
-                <p class="text-gray-600">Your advertisement has been sent to Obsera Solutions for review. We will contact you once it is live on the screen.</p>
-                <button onclick="location.reload()" class="mt-6 text-blue-800 font-bold underline">Submit another ad</button>
+            <div id="formContainer" class="fade-in">
+                <h2 class="text-3xl font-bold mb-6 text-gray-900 uppercase">Submit Your Ad</h2>
+                <form id="adForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Your Business Name</label>
+                        <input type="text" id="businessName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none" placeholder="e.g., Royal Mobiles">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Ad Duration</label>
+                        <select id="duration" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none bg-gray-50">
+                            <option value="10">10 Seconds (Default)</option>
+                            <option value="15">15 Seconds</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Upload Ad Poster (Image)</label>
+                        <input type="file" id="fileInput" accept="image/*" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-800 hover:file:bg-blue-100">
+                        <p class="text-xs text-gray-500 mt-1">Recommended size: 1920x1080px (Landscape). JPG or PNG.</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg uppercase tracking-wide mt-4">
+                        Submit Request
+                    </button>
+                </form>
             </div>
 
-            <h2 class="text-3xl font-bold mb-6 text-gray-900 uppercase">Submit Your Ad</h2>
-            
-            <form id="adForm" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Your Business Name</label>
-                    <input type="text" id="businessName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none" placeholder="e.g., Royal Mobiles">
-                </div>
+            <div id="loadingScreen" class="hidden absolute inset-0 bg-white rounded-xl flex flex-col items-center justify-center p-8 text-center z-10 fade-in">
+                <div class="spinner mb-6"></div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2 uppercase tracking-wide">Processing Request</h2>
+                <p id="loadingText" class="text-blue-800 font-medium text-lg animate-pulse">Initializing...</p>
+                <p class="text-gray-500 text-sm mt-4">Please do not close this window.</p>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Ad Duration</label>
-                    <select id="duration" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none bg-gray-50">
-                        <option value="10">10 Seconds (Default)</option>
-                        <option value="15">15 Seconds</option>
-                    </select>
+            <div id="statusMessage" class="hidden absolute inset-0 bg-white rounded-xl flex flex-col items-center justify-center p-8 text-center z-20 fade-in">
+                <div class="bg-green-100 text-green-600 rounded-full p-4 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Successfully Submitted!</h2>
+                <p class="text-gray-600">Your advertisement poster has been securely sent to Obsera Solutions for review. We will contact you once it is live on the screen.</p>
+                <button onclick="location.reload()" class="mt-8 text-blue-800 font-bold px-6 py-2 border-2 border-blue-800 rounded-lg hover:bg-blue-50 transition-colors">Submit another ad</button>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Upload Ad Poster (Image)</label>
-                    <input type="file" id="fileInput" accept="image/*" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-800 hover:file:bg-blue-100">
-                    <p class="text-xs text-gray-500 mt-1">Recommended size: 1920x1080px (Landscape). JPG or PNG.</p>
+            <div id="errorMessage" class="hidden absolute inset-0 bg-white rounded-xl flex flex-col items-center justify-center p-8 text-center z-20 fade-in">
+                <div class="bg-red-100 text-red-600 rounded-full p-4 mb-4">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Upload Failed</h2>
+                <p class="text-gray-600">Something went wrong. Please check your internet connection or try a smaller image.</p>
+                <button onclick="resetForm()" class="mt-8 text-white bg-blue-800 font-bold px-6 py-2 rounded-lg hover:bg-blue-900 transition-colors">Try Again</button>
+            </div>
 
-                <button type="submit" id="submitBtn" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg uppercase tracking-wide mt-4">
-                    Submit Request
-                </button>
-            </form>
         </div>
-
     </main>
 
 <script>
     // --- 1. CONFIGURATION ---
-    // You need a free ImgBB API key to convert the image to a link automatically
     const IMGBB_API_KEY = "6aa95dc0f064beb2af336e93b2833e13"; 
     const TARGET_EMAIL = "contact.obserasolutions@gmail.com";
 
+    // UI Elements
+    const formContainer = document.getElementById("formContainer");
+    const loadingScreen = document.getElementById("loadingScreen");
+    const statusMessage = document.getElementById("statusMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const loadingText = document.getElementById("loadingText");
+
+    function resetForm() {
+        errorMessage.classList.add("hidden");
+        loadingScreen.classList.add("hidden");
+        formContainer.style.display = "block";
+    }
+
     document.getElementById("adForm").addEventListener("submit", async function(e) {
-        e.preventDefault(); // Stop page from reloading
-        
-        const submitBtn = document.getElementById("submitBtn");
-        const statusDiv = document.getElementById("statusMessage");
-        const form = document.getElementById("adForm");
+        e.preventDefault(); 
         
         const businessName = document.getElementById("businessName").value;
         const duration = document.getElementById("duration").value;
@@ -108,12 +153,14 @@
         
         if (!fileInput) return;
 
+        // Start Engaging Loading UI
+        formContainer.style.display = "none";
+        loadingScreen.classList.remove("hidden");
+
         try {
             // -- STEP 1: UPLOAD TO IMGBB --
-            submitBtn.innerText = "Uploading Poster... Please wait";
-            submitBtn.disabled = true;
-            submitBtn.classList.add("opacity-75", "cursor-not-allowed");
-
+            loadingText.innerText = "Uploading your poster securely... (Step 1/2)";
+            
             const formData = new FormData();
             formData.append("image", fileInput);
             
@@ -125,10 +172,10 @@
             const imgData = await imgResponse.json();
             if (!imgData.success) throw new Error("Image upload failed");
             
-            const imageUrl = imgData.data.url; // This is the direct link we need!
+            const imageUrl = imgData.data.url; 
 
-            // -- STEP 2: SEND EMAIL VIA FORMSUBMIT AJAX --
-            submitBtn.innerText = "Sending Details to Obsera... 🚀";
+            // -- STEP 2: SEND EMAIL VIA FORMSUBMIT --
+            loadingText.innerText = "Notifying the Obsera team... (Step 2/2)";
 
             const emailResponse = await fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
                 method: "POST",
@@ -140,9 +187,9 @@
                     _subject: `New Screen Ad Request: ${businessName}`,
                     "Business Name": businessName,
                     "Requested Duration": duration + " Seconds",
-                    "Direct Poster Link": imageUrl, // You copy-paste this into Google Sheets
-                    "_captcha": "false", // Bypasses recaptcha for background processing
-                    "_template": "table" // Makes the email look professional
+                    "Direct Poster Link": imageUrl, 
+                    "_captcha": "false", 
+                    "_template": "table" 
                 })
             });
 
@@ -150,15 +197,13 @@
             if (!emailData.success) throw new Error("Email sending failed");
 
             // -- STEP 3: SHOW SUCCESS --
-            form.style.display = "none";
-            statusDiv.classList.remove("hidden");
+            loadingScreen.classList.add("hidden");
+            statusMessage.classList.remove("hidden");
 
         } catch (error) {
             console.error(error);
-            alert("Oops! Something went wrong. Please check your internet connection and try again.");
-            submitBtn.innerText = "Submit Request";
-            submitBtn.disabled = false;
-            submitBtn.classList.remove("opacity-75", "cursor-not-allowed");
+            loadingScreen.classList.add("hidden");
+            errorMessage.classList.remove("hidden");
         }
     });
 </script>
