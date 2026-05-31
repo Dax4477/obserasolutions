@@ -1,0 +1,132 @@
+/* ==========================================================================
+   OBSERA SOLUTIONS - MASTER STYLESHEET
+   ========================================================================== */
+
+/* --- 1. BASE & TYPOGRAPHY --- */
+body {
+    background-color: #0f172a; /* Default Brand Dark */
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+.font-display {
+    font-family: 'Space Grotesk', sans-serif;
+}
+.font-oswald {
+    font-family: 'Oswald', sans-serif;
+}
+
+/* --- 2. GLOBAL UI COMPONENTS --- */
+/* Unified Glassmorphism Effect */
+.glass, .glass-panel {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ambient Background Glows */
+.bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    -webkit-filter: blur(100px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+/* Dark Mode Dropdowns */
+select option {
+    background-color: #1e293b;
+    color: white;
+}
+
+/* Custom Scrollbars */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.3); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.6); }
+
+/* --- 3. ANIMATIONS & UTILITIES --- */
+/* Loading Spinner */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    width: 30px; height: 30px; border-radius: 50%;
+    border-left-color: #38bdf8;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Entrance Animations */
+.fade-in { animation: fadeIn 0.5s ease-out forwards; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 4. LANDING PAGE SPECIFIC (index.html) --- */
+/* Background Grid */
+.bg-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+/* Gradient Text Animation */
+.text-gradient-animate {
+    background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc, #38bdf8);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradientMove 3s linear infinite;
+}
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Blob Delays */
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* SPA Routing Classes */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* Blog Typography */
+.prose p { margin-bottom: 1.5rem; line-height: 1.8; color: #94a3b8; }
+.prose strong { color: #fff; font-weight: 600; }
+.prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; color: #94a3b8; }
+.prose li { margin-bottom: 0.5rem; }
+
+/* --- 5. CAMPAIGN PORTAL SPECIFIC --- */
+/* Custom Range Slider */
+input[type=range] { -webkit-appearance: none; background: transparent; }
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
+    background: #38bdf8; cursor: pointer; margin-top: -7px;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%; height: 4px; background: #334155; border-radius: 2px;
+}
+
+/* --- 6. AD TRACKER SPECIFIC (ad_clicks.php) --- */
+/* Print Styles for Reports */
+@media print {
+    body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
+    #radar-data { display: none !important; }
+    #print-area { display: block !important; position: absolute; top: 0; left: 0; width: 100%; }
+}
+@media screen {
+    #print-area { display: none; }
+}

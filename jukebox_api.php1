@@ -1,0 +1,125 @@
+<?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
+
+$stateFile = 'jukebox_state.json';
+$playlistFile = 'playlist.json';
+$suggestionsFile = 'suggestions.json';
+$adFile = 'ad.json';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'suggest') {
+    $title = isset($_POST['title']) ? htmlspecialchars($_POST['title']) : '';
+    $artist = isset($_POST['artist']) ? htmlspecialchars($_POST['artist']) : 'Unknown';
+    if (!empty($title)) {
+        $suggestions = file_exists($suggestionsFile) ? json_decode(file_get_contents($suggestionsFile), true) : [];
+        $suggestions[] = ["id" => uniqid('sug_'), "title" => $title, "artist" => $artist, "timestamp" => date('c')];
+        file_put_contents($suggestionsFile, json_encode($suggestions, JSON_PRETTY_PRINT));
+        echo json_encode(["success" => true]); exit;
+    }
+}
+
+$master_playlist = file_exists($playlistFile) ? json_decode(file_get_contents($playlistFile), true) : [];
+if (empty($master_playlist)) { echo json_encode(["error" => "Playlist is empty"]); exit; }
+
+// ЁЯЫая╕П ADDED MASTER CLOCK INITIALIZATION
+if (!file_exists($stateFile)) {
+    $initial_state = [
+        "current" => $master_playlist[array_rand($master_playlist)], 
+        "started_at" => time(), 
+        "last_played_id" => "", 
+        "options" => []
+    ];
+    file_put_contents($stateFile, json_encode($initial_state));
+}
+$state = json_decode(file_get_contents($stateFile), true);
+
+// Fallback if old JSON doesn't have a clock yet
+if (!isset($state['started_at'])) { $state['started_at'] = time(); }
+
+$current_exists = false;
+foreach ($master_playlist as $s) { if ($s['id'] === $state['current']['id']) { $current_exists = true; break; } }
+if (!$current_exists) {
+    $state['current'] = $master_playlist[array_rand($master_playlist)];
+    $state['started_at'] = time(); // Reset clock
+    $state['options'] = []; 
+}
+
+$valid_options = [];
+$existing_ids = [];
+foreach ($state['options'] as $opt) {
+    $song_id = $opt['song']['id'];
+    if ($song_id !== $state['current']['id'] && $song_id !== $state['last_played_id']) {
+        $exists_in_master = false;
+        foreach ($master_playlist as $m_song) { if ($m_song['id'] === $song_id) { $exists_in_master = true; break; } }
+        if ($exists_in_master) { $valid_options[] = $opt; $existing_ids[] = $song_id; }
+    }
+}
+
+$new_songs = [];
+foreach ($master_playlist as $song) {
+    if ($song['id'] !== $state['current']['id'] && $song['id'] !== $state['last_played_id']) {
+        if (!in_array($song['id'], $existing_ids)) { $new_songs[] = ["song" => $song, "votes" => 0]; }
+    }
+}
+
+shuffle($new_songs);
+$state['options'] = array_merge($valid_options, $new_songs);
+usort($state['options'], function($a, $b) { return $b['votes'] - $a['votes']; });
+file_put_contents($stateFile, json_encode($state));
+
+if (isset($_GET['action']) && $_GET['action'] == 'vote' && isset($_GET['id'])) {
+    foreach ($state['options'] as &$option) { if ($option['song']['id'] === $_GET['id']) $option['votes']++; }
+    usort($state['options'], function($a, $b) { return $b['votes'] - $a['votes']; });
+    file_put_contents($stateFile, json_encode($state));
+    
+    $state['server_now'] = time(); // Inject Current Time
+    echo json_encode(["success" => true, "state" => $state]); exit;
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'next') {
+    $state['last_played_id'] = $state['current']['id'];
+
+    if (!empty($state['options'])) {
+        $state['current'] = $state['options'][0]['song'];
+    } else {
+        $state['current'] = $master_playlist[array_rand($master_playlist)];
+    }
+    
+    $state['started_at'] = time(); // ЁЯЫая╕П RESET CLOCK FOR NEW SONG
+    
+    $new_options = [];
+    $existing_ids = [];
+    foreach ($state['options'] as $opt) {
+        $song_id = $opt['song']['id'];
+        if ($song_id !== $state['current']['id'] && $song_id !== $state['last_played_id']) {
+            $new_options[] = $opt; $existing_ids[] = $song_id;
+        }
+    }
+
+    $unvoted_pool = [];
+    foreach ($master_playlist as $song) {
+        if ($song['id'] !== $state['current']['id'] && $song['id'] !== $state['last_played_id']) {
+            if (!in_array($song['id'], $existing_ids)) { $unvoted_pool[] = ["song" => $song, "votes" => 0]; }
+        }
+    }
+    
+    shuffle($unvoted_pool);
+    $state['options'] = array_merge($new_options, $unvoted_pool);
+    usort($state['options'], function($a, $b) { return $b['votes'] - $a['votes']; });
+    
+    file_put_contents($stateFile, json_encode($state));
+    
+    $adData = file_exists($adFile) ? json_decode(file_get_contents($adFile), true) : ["url" => "https://tse4.mm.bing.net/th/id/OIP.r7HqWPx9Zj8_wJJDsCc-1gHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"];
+    $state['ad_url'] = $adData['url'];
+    
+    $state['server_now'] = time(); // Inject Current Time
+    echo json_encode(["success" => true, "state" => $state]); exit;
+}
+
+$adData = file_exists($adFile) ? json_decode(file_get_contents($adFile), true) : ["url" => "https://tse4.mm.bing.net/th/id/OIP.r7HqWPx9Zj8_wJJDsCc-1gHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"];
+$state['ad_url'] = $adData['url'];
+
+// ЁЯЫая╕П INJECT CURRENT TIME INTO EVERY RESPONSE
+$state['server_now'] = time();
+echo json_encode($state);
+?>

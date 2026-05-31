@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsera | Universal Food Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="clients.js"></script>
+
+    <style>
+        body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            width: 30px; height: 30px; border-radius: 50%;
+            border-left-color: #38bdf8;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .bg-glow { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; pointer-events: none; opacity: 0.3; }
+        
+        /* Custom scrollbar for suggestions */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); border-radius: 8px;}
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.6); }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen relative flex flex-col items-center">
+
+    <div class="bg-glow w-[400px] h-[400px] bg-sky-600/30 top-[-50px] left-[-50px]"></div>
+    <div class="bg-glow w-[300px] h-[300px] bg-emerald-600/20 bottom-[10%] right-[-50px]"></div>
+
+    <div class="w-full max-w-4xl mt-10 md:mt-20 z-10">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-6xl font-display font-bold text-white tracking-tight mb-4">Discover Local Cravings</h1>
+            <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto">Search across our entire network of live digital menus to find exactly what you're hungry for.</p>
+        </div>
+
+        <div class="relative w-full mb-6">
+            <div class="glass p-3 rounded-2xl md:rounded-full flex flex-col md:flex-row gap-3 shadow-2xl border border-slate-700 hover:border-sky-500/50 transition-colors focus-within:border-sky-500 relative z-20">
+                <div class="relative flex-grow flex items-center">
+                    <svg class="w-6 h-6 text-slate-400 absolute left-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    
+                    <input type="text" id="searchInput" placeholder="Search for 'Biriyani', 'Burger', 'Coffee'..." autocomplete="off" class="w-full bg-transparent border-none text-white text-lg py-3 pl-12 pr-4 outline-none placeholder-slate-500" onkeypress="handleEnter(event)" oninput="handleTyping(event)">
+                </div>
+                <button onclick="performSearch()" id="searchBtn" class="bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold px-8 py-3 rounded-xl md:rounded-full transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0">
+                    <span>Search Network</span>
+                </button>
+            </div>
+
+            <div id="suggestionsBox" class="absolute top-[80%] left-4 right-4 md:left-8 md:right-48 bg-slate-800 border border-slate-700 shadow-2xl rounded-b-2xl pt-6 pb-2 hidden z-10 max-h-60 overflow-y-auto custom-scrollbar">
+                </div>
+        </div>
+
+        <div id="diagnosticArea" class="mb-8 w-full"></div>
+
+        <div id="loadingState" class="hidden flex-col items-center justify-center py-12 fade-in">
+            <div class="spinner mb-4"></div>
+            <p class="text-sky-400 font-bold tracking-widest uppercase text-sm animate-pulse">Scanning Live Menus...</p>
+        </div>
+
+        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+
+    </div>
+
+    <script>
+        const SEARCH_LOCATIONS = typeof OBSERA_CLIENTS !== 'undefined' 
+            ? Object.keys(OBSERA_CLIENTS).map(key => ({ id: key, ...OBSERA_CLIENTS[key] })) 
+            : (typeof window.LOCATIONS_DATA !== 'undefined' ? window.LOCATIONS_DATA : []);
+
+        // --- BACKGROUND PRELOADER LOGIC ---
+        let networkMenuCache = []; 
+        let uniqueDishNames = new Set();
+        let isCacheReady = false;
+        let cachePromise = null;
+
+        // Run this immediately when page opens
+        window.onload = function() {
+            cachePromise = preloadNetworkData();
+        };
+
+        async function preloadNetworkData() {
+            const clientsWithSheets = SEARCH_LOCATIONS.filter(c => c.menuSheetId);
+            if (clientsWithSheets.length === 0) return;
+
+            const fetchPromises = clientsWithSheets.map(async (client) => {
+                const sheetUrl = `https://docs.google.com/spreadsheets/d/${client.menuSheetId}/export?format=csv&gid=0&t=${Date.now()}`;
+                try {
+                    const response = await fetch(sheetUrl, { cache: "no-store" });
+                    if (!response.ok) return null;
+                    const csvText = await response.text();
+                    
+                    if (csvText.trim().toLowerCase().startsWith('<!doctype html>')) return null;
+
+                    return new Promise(resolve => {
+                        Papa.parse(csvText, {
+                            header: true, skipEmptyLines: true,
+                            complete: function(results) {
+                                // Extract dish names for the autocomplete
+                                results.data.forEach(row => {
+                                    const rowValuesString = Object.values(row).join(' ').toLowerCase();
+                                    if (rowValuesString.includes('advertisement')) return; // Skip ads
+
+                                    const keys = Object.keys(row);
+                                    let itemName = "";
+                                    keys.forEach(k => {
+                                        const lowerKey = k.toLowerCase().trim();
+                                        if (lowerKey === 'name' || lowerKey === 'item' || lowerKey.includes('dish') || lowerKey.includes('title')) itemName = row[k];
+                                    });
+                                    if (!itemName && keys.length > 0) itemName = row[keys[0]];
+                                    
+                                    if(itemName && itemName.trim() !== '') {
+                                        uniqueDishNames.add(itemName.trim());
+                                    }
+                                });
+
+                                resolve({ client: client, rawData: results.data });
+                            }
+                        });
+                    });
+                } catch (e) { return null; }
+            });
+
+            const results = await Promise.all(fetchPromises);
+            networkMenuCache = results.filter(r => r !== null);
+            isCacheReady = true;
+        }
+
+        // --- INSTANT AUTOCOMPLETE SUGGESTIONS ---
+        function handleTyping(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const box = document.getElementById('suggestionsBox');
+            
+            // Only show suggestions if user typed at least 2 letters
+            if (!query || query.length < 2 || uniqueDishNames.size === 0) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            // Find matching dishes
+            const suggestions = Array.from(uniqueDishNames)
+                .filter(name => name.toLowerCase().includes(query))
+                .slice(0, 6); // Show top 6 matches
+
+            if (suggestions.length > 0) {
+                box.innerHTML = suggestions.map(s => `
+                    <div class="px-5 py-3 hover:bg-slate-700/50 cursor-pointer text-slate-300 font-medium transition-colors border-b border-slate-700/30 last:border-0 flex items-center gap-3" onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span class="truncate">${s}</span>
+                    </div>
+                `).join('');
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        function selectSuggestion(value) {
+            document.getElementById('searchInput').value = value;
+            document.getElementById('suggestionsBox').classList.add('hidden');
+            performSearch();
+        }
+
+        // Close suggestions if clicked outside
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('searchInput').contains(e.target) && !document.getElementById('suggestionsBox').contains(e.target)) {
+                document.getElementById('suggestionsBox').classList.add('hidden');
+            }
+        });
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('suggestionsBox').classList.add('hidden');
+                performSearch();
+            }
+        }
+
+        // --- INSTANT SEARCH LOGIC ---
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loadingState = document.getElementById('loadingState');
+            const diagnosticArea = document.getElementById('diagnosticArea');
+
+            document.getElementById('suggestionsBox').classList.add('hidden'); // Hide dropdown
+
+            if (!query) {
+                const bar = document.querySelector('.glass');
+                bar.style.transform = 'translateX(10px)';
+                setTimeout(() => bar.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => bar.style.transform = 'translateX(0)', 200);
+                return;
+            }
+
+            if (SEARCH_LOCATIONS.length === 0) {
+                diagnosticArea.innerHTML = `<div class="text-center text-red-400 p-4 bg-red-500/10 rounded-xl border border-red-500/20 font-bold">System Error: Could not find clients.js data.</div>`;
+                return;
+            }
+
+            // Wait for background preloader to finish if user searches too fast (e.g. within 1 second of opening page)
+            if (!isCacheReady && cachePromise) {
+                loadingState.classList.remove('hidden');
+                loadingState.classList.add('flex');
+                await cachePromise; 
+            }
+
+            loadingState.classList.add('hidden');
+            loadingState.classList.remove('flex');
+            resultsContainer.innerHTML = '';
+
+            let totalMatchesFound = 0;
+            let resultsHTML = '';
+
+            // Search the lightning-fast local cache
+            networkMenuCache.forEach(cachedMenu => {
+                const matchedItems = cachedMenu.rawData.filter(row => {
+                    const rowValuesString = Object.values(row).join(' ').toLowerCase();
+                    if (rowValuesString.includes('advertisement') && !query.includes('advertisement')) return false;
+                    return rowValuesString.includes(query);
+                });
+
+                if (matchedItems.length > 0) {
+                    totalMatchesFound++;
+                    let itemsHtml = '';
+                    const displayItems = matchedItems.slice(0, 3);
+                    
+                    displayItems.forEach(item => {
+                        const keys = Object.keys(item);
+                        let itemName = "";
+                        let itemPrice = "";
+                        let itemCat = "";
+
+                        keys.forEach(k => {
+                            const lowerKey = k.toLowerCase().trim();
+                            if (lowerKey === 'name' || lowerKey === 'item' || lowerKey.includes('product') || lowerKey.includes('dish') || lowerKey.includes('title')) itemName = item[k];
+                            else if (lowerKey === 'price' || lowerKey.includes('cost') || lowerKey.includes('rate') || lowerKey.includes('mrp')) itemPrice = item[k];
+                            else if (lowerKey === 'category' || lowerKey.includes('type')) itemCat = item[k];
+                        });
+
+                        if (!itemName && keys.length > 0) itemName = item[keys[0]];
+                        if (!itemPrice && keys.length > 1) itemPrice = item[keys[1]];
+                        
+                        if(!itemName) itemName = "Unknown Item";
+                        if(!itemPrice) itemPrice = "-";
+                        if(!itemCat) itemCat = "Menu Item";
+
+                        itemsHtml += `
+                            <div class="flex justify-between items-center py-2 border-b border-slate-700/50 last:border-0">
+                                <div class="pr-2 overflow-hidden">
+                                    <span class="text-sm font-bold text-slate-200 block truncate">${itemName}</span>
+                                    <span class="text-[10px] text-slate-500 uppercase">${itemCat}</span>
+                                </div>
+                                <span class="text-emerald-400 font-bold text-sm bg-emerald-500/10 px-2 py-1 rounded whitespace-nowrap shrink-0">${itemPrice}</span>
+                            </div>
+                        `;
+                    });
+
+                    if (matchedItems.length > 3) {
+                        itemsHtml += `<div class="text-xs text-sky-400 text-center mt-3 font-bold uppercase tracking-widest">+ ${matchedItems.length - 3} more matches</div>`;
+                    }
+
+                    const mapBtn = cachedMenu.client.mapLink ? `
+                        <a href="${cachedMenu.client.mapLink}" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-3 rounded-xl transition-colors border border-slate-700 flex items-center justify-center shrink-0" title="Open Map">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </a>
+                    ` : '';
+
+                    resultsHTML += `
+                        <div class="glass p-6 rounded-3xl flex flex-col justify-between hover:border-sky-500/30 transition-colors fade-in shadow-xl">
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-2xl font-display font-bold text-white leading-none mb-1">${cachedMenu.client.name}</h3>
+                                        <span class="text-[10px] uppercase tracking-widest font-bold text-slate-500">${cachedMenu.client.tag || 'Live Menu'}</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/50 rounded-xl p-4 border border-white/5 mb-6">
+                                    ${itemsHtml}
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mt-auto">
+                                <a href="mobile?client=${cachedMenu.client.id}" target="_blank" class="flex-grow bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold py-3 rounded-xl text-center text-sm transition-all shadow-lg flex items-center justify-center gap-2">
+                                    View Full Menu
+                                </a>
+                                ${mapBtn}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (totalMatchesFound === 0) {
+                resultsHTML = `
+                    <div class="col-span-full glass p-12 rounded-3xl text-center fade-in border border-slate-700">
+                        <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2 font-display">No matches found</h2>
+                        <p class="text-slate-400">We couldn't find any locations currently serving "${query}". Make sure the Google Sheets are "Published to Web".</p>
+                    </div>
+                `;
+            }
+
+            resultsContainer.innerHTML = resultsHTML;
+        }
+    </script>
+</body>
+</html>

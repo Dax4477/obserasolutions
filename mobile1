@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" /> 
+    
+    <title>Obsera Mobile Menu</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="clients.js"></script>
+
+    <style>
+        .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        
+        body {
+            overscroll-behavior-y: none; 
+            background-color: #f8fafc; 
+        }
+
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .smooth-scroll {
+            display: inline-block; 
+            white-space: nowrap; 
+            will-change: transform;
+            animation: scroll-left linear infinite;
+        }
+        @keyframes scroll-left {
+            from { transform: translateX(100vw); } 
+            to { transform: translateX(-100%); } 
+        }
+
+        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+
+<body class="text-slate-900 min-h-screen flex flex-col font-body antialiased relative selection:bg-indigo-100">
+
+    <header class="bg-white/90 backdrop-blur-xl px-5 py-4 z-50 sticky top-0 w-full flex justify-between items-center border-b border-slate-100 h-[70px]">        
+        <div class="flex flex-col">
+            <h1 id="restaurant-name-display" class="text-2xl font-heading font-extrabold uppercase tracking-tight leading-none text-slate-900">LOADING...</h1>
+            <p class="text-indigo-600 text-[9px] font-bold tracking-[0.2em] mt-1.5 uppercase">Powered by Obsera</p>
+        </div>
+        <div id="clock" class="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">00:00</div>
+    </header>
+
+    <nav id="category-tabs" class="sticky top-[70px] z-40 bg-slate-50/90 backdrop-blur-md py-3 px-4 flex gap-3 overflow-x-auto hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        </nav>
+
+    <main class="flex-grow w-full pb-32 relative z-10">
+        <div id="menu-container" class="w-full px-4 pt-4">
+            
+            <div class="flex flex-col items-center justify-center h-[50vh] space-y-5">
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <div class="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <p class="text-slate-400 text-xs uppercase tracking-widest font-bold">Curating Menu...</p>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="bottom-jukebox" class="fixed bottom-[60px] left-1/2 -translate-x-1/2 z-50 hidden fade-in">
+        <a href="https://obserasolutions.site/mobile_vote" class="flex items-center gap-3 bg-slate-900 text-white px-6 py-3.5 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.2)] active:scale-[0.96] transition-transform border border-slate-700">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+            <span class="font-heading font-bold text-sm tracking-wide">LIVE JUKEBOX</span>
+        </a>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 w-full bg-slate-900 z-40 h-[40px] flex items-center overflow-hidden">
+        <div id="ticker-text" class="smooth-scroll text-[13px] text-slate-100 font-medium tracking-widest w-max min-w-full shrink-0">
+            ★ CONTACT OBSERA SOLUTIONS ★ WHATSAPP- +91 9562551376
+        </div>
+    </footer>
+
+<script>
+    // --- 1. INITIALIZE CLIENT DATA ---
+    const urlParams = new URLSearchParams(window.location.search);
+    let clientId = urlParams.get('client'); 
+    
+    if (clientId) { 
+        clientId = clientId.toLowerCase().trim(); 
+        fetch(`https://obserasolutions.site/track.php?client=${clientId}`).catch(e => console.log("Analytics ping failed"));
+    }
+
+    const clientData = OBSERA_CLIENTS[clientId];
+
+    if (!clientData) {
+        document.body.innerHTML = `
+            <div style="display:flex; height:100vh; background:#f8fafc; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:20px;">
+                <h1 style="color:#0f172a; font-size:1.5rem; font-family:sans-serif; font-weight:bold; margin-bottom:1rem;">LOCATION NOT FOUND</h1>
+                <p style="color:#64748b; font-size:1rem; font-family:sans-serif;">Please scan a valid QR code.</p>
+            </div>`;
+        throw new Error("Client ID does not exist in clients.js");
+    }
+
+    document.getElementById('restaurant-name-display').innerText = clientData.name;
+
+    const MENU_SHEET_URL = `https://docs.google.com/spreadsheets/d/${clientData.menuSheetId}/export?format=csv&gid=0`;
+    const AD_SHEET_URL = `https://docs.google.com/spreadsheets/d/${clientData.adSheetId}/export?format=csv&gid=0`;
+
+    const CHECK_INTERVAL = 30000;    
+    let currentMenuDataHash = ""; 
+    let scrollObserver = null;
+
+    // --- 2. FETCH DATA ---
+    function fetchMenuData() {
+        const uniqueMenuUrl = MENU_SHEET_URL + '&t=' + Date.now();
+        const uniqueAdUrl = AD_SHEET_URL + '&t=' + Date.now();
+
+        Promise.all([
+            fetch(uniqueMenuUrl, { cache: "no-store" }).then(r => r.ok ? r.text() : null).catch(() => null),
+            fetch(uniqueAdUrl, { cache: "no-store" }).then(r => r.ok ? r.text() : null).catch(() => null)
+        ])
+        .then(([menuCsv, adCsv]) => {
+            let combinedData = { menuRows: [], adRows: [] };
+            if (menuCsv) Papa.parse(menuCsv, { header: true, skipEmptyLines: true, complete: res => combinedData.menuRows = res.data });
+            if (adCsv) Papa.parse(adCsv, { header: true, skipEmptyLines: true, complete: res => combinedData.adRows = res.data });
+            setTimeout(() => { processData(combinedData); }, 200);
+        })
+        .catch(e => console.error("Error fetching sheets:", e));
+    }
+
+    function processData(combinedData) {
+        const newHash = JSON.stringify(combinedData);
+        if (newHash === currentMenuDataHash) return;
+        currentMenuDataHash = newHash;
+
+        let menuGroups = {};
+        let adList = [];
+        let tickerMessage = "★ FOR ADVERTISING HERE ★ CONTACT OBSERA SOLUTIONS ★ WHATSAPP- +91 9562551376";
+
+        combinedData.menuRows.forEach(row => {
+            let safeRow = {};
+            Object.keys(row).forEach(k => safeRow[k.toLowerCase().trim()] = row[k]);
+            let cat = safeRow.category ? safeRow.category.trim().toUpperCase() : "OUR MENU";
+            
+            if (safeRow.name && cat !== "ADVERTISEMENT") {
+                if (!menuGroups[cat]) menuGroups[cat] = [];
+                // 🛠️ GRAB THE PRICE DATA AGAIN
+                menuGroups[cat].push({ name: safeRow.name, price: safeRow.price, desc: safeRow.desc || safeRow.description || "", image: safeRow.image });
+            }
+        });
+
+        combinedData.adRows.forEach(row => {
+            let safeRow = {};
+            Object.keys(row).forEach(k => safeRow[k.toLowerCase().trim()] = row[k]);
+            
+            if ((safeRow.name && safeRow.name.toUpperCase() === "TICKER") || (safeRow.category && safeRow.category.toUpperCase() === "TICKER")) {
+                let msg = safeRow.desc || safeRow.description || "";
+                if (msg.length > 0) tickerMessage = msg;
+                return;
+            }
+
+            let cat = safeRow.category ? safeRow.category.trim().toUpperCase() : "";
+            
+            if (cat === "ADVERTISEMENT" || cat === "AD") {
+                if (safeRow.image) {
+                    const isVideo = safeRow.image.match(/\.(mp4|webm|ogg)$/i);
+                    let rawLink = safeRow.link || "";
+                    let finalLink = rawLink.trim();
+                    if (finalLink !== "" && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
+
+                    let pos = parseInt(safeRow.position);
+                    adList.push({ type: isVideo ? 'video' : 'image', image: safeRow.image, link: finalLink, position: isNaN(pos) ? null : pos });
+                }
+            }
+        });
+
+        const tickerElement = document.getElementById('ticker-text');
+        if (tickerElement) {
+            tickerElement.innerText = tickerMessage;
+            setTimeout(adjustTickerSpeed, 300);
+        }
+
+        renderMobileView(menuGroups, adList);
+    }
+
+    // --- INTERACTIVE PRICE TOGGLE FUNCTION ---
+    function togglePrice(priceId, iconId) {
+        const priceEl = document.getElementById(priceId);
+        const iconEl = document.getElementById(iconId);
+        
+        if (priceEl.classList.contains('max-h-0')) {
+            priceEl.classList.remove('max-h-0', 'opacity-0');
+            priceEl.classList.add('max-h-24', 'opacity-100');
+            iconEl.classList.add('rotate-180');
+        } else {
+            priceEl.classList.add('max-h-0', 'opacity-0');
+            priceEl.classList.remove('max-h-24', 'opacity-100');
+            iconEl.classList.remove('rotate-180');
+        }
+    }
+
+    // --- 3. MOBILE RENDER ENGINE ---
+    function renderMobileView(menuGroups, adList) {
+        const container = document.getElementById('menu-container');
+        const tabContainer = document.getElementById('category-tabs');
+        const jukeboxBtn = document.getElementById('floating-jukebox');
+        
+        let html = '';
+        let tabsHtml = '';
+        const categories = Object.keys(menuGroups);
+
+        const createAdBlock = (ad) => {
+            const hasLink = ad.link && ad.link.trim() !== "";
+            const trackClick = hasLink ? `onclick="fetch('https://obserasolutions.site/track.php?client=${clientId}&ad_click=${encodeURIComponent(ad.link)}');"` : "";
+            const wrapperStart = hasLink ? `<a href="${ad.link}" target="_blank" ${trackClick} class="block cursor-pointer relative active:scale-[0.98] transition-transform">` : `<div class="block relative active:scale-[0.98] transition-transform">`;
+            const wrapperEnd = hasLink ? `</a>` : `</div>`;
+            
+            const mediaContent = ad.type === 'video' 
+                ? `<video src="${ad.image}" class="w-full h-auto object-cover aspect-video" autoplay loop muted playsinline></video>`
+                : `<img src="${ad.image}" class="w-full h-auto object-cover aspect-video" loading="lazy">`;
+
+            return `
+                <div class="mb-6 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)] bg-white relative shrink-0 fade-in border border-slate-100">
+                    ${wrapperStart}
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full z-20 shadow-sm flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                            <span class="text-slate-700 text-[9px] font-bold uppercase tracking-widest">Featured</span>
+                        </div>
+                        ${mediaContent}
+                    ${wrapperEnd}
+                </div>
+            `;
+        };
+
+        let currentCategoryNumber = 1;
+        
+        categories.forEach((categoryName, index) => {
+            const safeId = categoryName.replace(/[^a-zA-Z0-9]/g, '_');
+            const items = menuGroups[categoryName];
+            
+            const isFirst = index === 0;
+            const activeClasses = isFirst ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200';
+            
+            tabsHtml += `
+                <button onclick="scrollToCategory('${safeId}')" id="tab-${safeId}" class="tab-btn px-5 py-2 rounded-full font-medium text-sm shrink-0 ${activeClasses}">
+                    ${categoryName}
+                </button>
+            `;
+            
+            html += `
+                <div id="cat-${safeId}" class="category-section pt-2 pb-1 mb-3 mt-6 first:mt-2 scroll-mt-32">
+                    <h2 class="text-2xl font-heading font-bold text-slate-900 tracking-tight">${categoryName}</h2>
+                </div>
+                <div class="grid grid-cols-1 gap-4 mb-8">
+            `;
+
+            items.forEach((item, itemIndex) => {
+                const fallbackImage = 'https://placehold.co/300x300/f1f5f9/94a3b8?text=Image';
+                
+                // 🛠️ CHECK IF ITEM HAS A VALID PRICE
+                const hasPrice = item.price && item.price.toString().trim() !== "";
+                const clickAction = hasPrice ? `onclick="togglePrice('price-${safeId}-${itemIndex}', 'icon-${safeId}-${itemIndex}')"` : "";
+                const cursorClass = hasPrice ? "cursor-pointer active:scale-[0.98]" : "";
+                
+                // Generates the Chevron Arrow if price exists
+                const chevronHtml = hasPrice ? `
+                    <svg id="icon-${safeId}-${itemIndex}" class="w-4 h-4 text-slate-400 transition-transform duration-300 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                ` : "";
+
+                // Generates the hidden Dropdown if price exists
+                const dropdownHtml = hasPrice ? `
+                    <div id="price-${safeId}-${itemIndex}" class="max-h-0 overflow-hidden opacity-0 transition-all duration-300">
+                        <div class="pt-3 mt-2 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Price</span>
+                            <span class="text-lg font-heading font-extrabold text-indigo-600">${item.price}</span>
+                        </div>
+                    </div>
+                ` : "";
+
+                html += `
+                    <div ${clickAction} class="bg-white rounded-3xl p-3 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.03)] fade-in ${cursorClass} transition-transform duration-200 border border-slate-100">
+                        <div class="flex gap-4 w-full">
+                            <div class="w-[110px] h-[110px] rounded-2xl bg-slate-50 overflow-hidden shrink-0 relative">
+                                <img src="${item.image}" class="h-full w-full object-cover absolute inset-0" onerror="this.src='${fallbackImage}'" loading="lazy">
+                            </div>
+                            <div class="flex-grow flex flex-col justify-center py-1 pr-2 relative">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="text-[17px] font-bold text-slate-900 font-heading leading-tight pr-2">${item.name}</h3>
+                                    ${chevronHtml}
+                                </div>
+                                <p class="text-slate-500 text-xs leading-relaxed line-clamp-2">${item.desc}</p>
+                            </div>
+                        </div>
+                        ${dropdownHtml}
+                    </div>
+                `;
+            });
+            html += `</div>`;
+
+            const adsForThisPosition = adList.filter(ad => ad.position === currentCategoryNumber);
+            adsForThisPosition.forEach(ad => { html += createAdBlock(ad); });
+            currentCategoryNumber++;
+        });
+
+        const unplacedAds = adList.filter(ad => !ad.position || ad.position > categories.length);
+        unplacedAds.forEach(ad => { html += createAdBlock(ad); });
+
+        tabContainer.innerHTML = tabsHtml;
+        tabContainer.classList.remove('hidden');
+        
+        container.innerHTML = html;
+        jukeboxBtn.classList.remove('hidden');
+        
+        setupScrollSpy(); 
+    }
+
+    // --- 4. SCROLL & TAB NAVIGATION LOGIC ---
+    function scrollToCategory(id) {
+        const el = document.getElementById('cat-' + id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            highlightTab(id);
+        }
+    }
+
+    function highlightTab(id) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('bg-slate-900', 'text-white', 'shadow-md');
+            btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'border');
+        });
+        
+        const activeTab = document.getElementById('tab-' + id);
+        if (activeTab) {
+            activeTab.classList.remove('bg-white', 'text-slate-600', 'border-slate-200', 'border');
+            activeTab.classList.add('bg-slate-900', 'text-white', 'shadow-md');
+            activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }
+
+    function setupScrollSpy() {
+        if (scrollObserver) scrollObserver.disconnect();
+        
+        const sections = document.querySelectorAll('.category-section');
+        
+        scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id.replace('cat-', '');
+                    highlightTab(id);
+                }
+            });
+        }, {
+            rootMargin: '-140px 0px -60% 0px', 
+            threshold: 0
+        });
+
+        sections.forEach(sec => scrollObserver.observe(sec));
+    }
+
+    function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+
+    function adjustTickerSpeed() {
+        const ticker = document.getElementById('ticker-text');
+        if (!ticker) return;
+        ticker.style.animationDuration = `${(window.innerWidth + ticker.offsetWidth) / 50}s`;
+    }
+
+    window.addEventListener('resize', adjustTickerSpeed);
+    fetchMenuData(); 
+    setInterval(updateClock, 1000); 
+    setInterval(fetchMenuData, CHECK_INTERVAL); 
+    updateClock();
+</script>
+</body>
+</html>

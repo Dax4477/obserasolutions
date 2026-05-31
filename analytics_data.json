@@ -1,0 +1,54 @@
+{
+    "bilal": {
+        "total_views": 44,
+        "daily_views": {
+            "2026-03-15": 5,
+            "2026-03-16": 5,
+            "2026-03-19": 1,
+            "2026-03-20": 10,
+            "2026-03-21": 8,
+            "2026-03-24": 2,
+            "2026-03-26": 1,
+            "2026-03-30": 12
+        },
+        "ad_clicks": {
+            "https:\/\/obserasolutions.site\/": 11,
+            "https:\/\/obserasolutions.site\/tv?client=bilal": 2
+        }
+    },
+    "demo": {
+        "total_views": 5,
+        "daily_views": {
+            "2026-03-16": 5
+        },
+        "ad_clicks": {
+            "https:\/\/obserasolutions.site\/tv?client=bilal": 1
+        }
+    },
+    "test3": {
+        "total_views": 1,
+        "daily_views": {
+            "2026-03-19": 1
+        },
+        "ad_clicks": []
+    },
+    "$": {
+        "total_views": 5,
+        "daily_views": {
+            "2026-03-19": 1,
+            "2026-03-26": 1,
+            "2026-04-02": 1,
+            "2026-04-12": 1,
+            "2026-04-19": 1
+        },
+        "ad_clicks": []
+    },
+    "malabar": {
+        "total_views": 11,
+        "daily_views": {
+            "2026-03-26": 2,
+            "2026-03-30": 9
+        },
+        "ad_clicks": []
+    }
+}

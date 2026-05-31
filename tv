@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" /> 
+    
+    <title>Obsera Display Engine</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <script src="clients.js"></script>
+
+    <style>
+        /* Hide scrollbar on TV */
+        @media (min-width: 600px) {
+            body::-webkit-scrollbar { display: none; }
+            body { -ms-overflow-style: none; scrollbar-width: none; } 
+        }
+        .font-heading { font-family: 'Oswald', sans-serif; }
+        .font-body { font-family: 'Roboto', sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Smooth Scrolling Text */
+        .smooth-scroll {
+            display: inline-block; 
+            white-space: nowrap; 
+            will-change: transform;
+            animation-name: scroll-left; 
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes scroll-left {
+            from { transform: translateX(100vw); } 
+            to { transform: translateX(-100%); } 
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col lg:h-screen lg:overflow-hidden font-body">
+
+    <header class="bg-blue-800 px-6 shadow-lg z-40 sticky top-0 w-full h-[12vh] grid grid-cols-3 items-center transition-transform duration-700 ease-in-out" id="main-header">        
+        <div class="text-left">
+            <h1 id="restaurant-name-display" class="text-3xl lg:text-5xl font-heading font-bold uppercase tracking-wider leading-tight">LOADING...</h1>
+            <p class="text-red-200 text-sm lg:text-xl">Powered by Obsera</p>
+        </div>
+        
+        <div class="text-center">
+             <h2 id="menu-title" class="text-5xl lg:text-7xl font-heading font-bold text-white uppercase truncate px-2">INITIALIZING...</h2>
+        </div>
+
+        <div class="text-right">
+            <div id="clock" class="text-2xl lg:text-6xl font-mono font-bold text-white bg-red-900/30 px-3 py-1 rounded inline-block whitespace-nowrap">00:00 PM</div>
+        </div>
+    </header>
+
+    <main class="flex-grow px-4 lg:px-8 py-4 w-full h-[76vh] overflow-hidden relative">
+        <div id="menu-container" class="w-full h-full uppercase relative">
+            <div class="flex flex-col items-center justify-center h-full space-y-4">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                <p class="text-white text-xl uppercase tracking-widest">Connecting to Obsera Network...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="fixed bottom-0 left-0 w-full bg-black z-40 border-t-2 border-blue-800 h-[12vh] flex items-center relative overflow-hidden transition-transform duration-700 ease-in-out" id="main-footer">
+        <div id="ticker-text" class="smooth-scroll text-7xl text-yellow-400 font-bold leading-none w-max min-w-full shrink-0">
+            ★ CONTACT OBSERA SOLUTIONS ★ WHATSAPP- +91 9562551376
+        </div>
+        
+        <div class="absolute right-0 bottom-0 bg-gray-900/80 px-1 py-1 rounded border border-gray-700 z-50">
+            <img src="https://github.com/Dax4477/live-menu/blob/main/Gemini_Generated_Image_jejmw3jejmw3jejm%20(3).png?raw=true" 
+                 class="h-9 w-auto object-contain opacity-90" 
+                 alt="Obsera Logo">
+        </div>
+    </footer>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('client') || 'uruvachal'; 
+
+    const clientData = OBSERA_CLIENTS[clientId];
+
+    if (!clientData) {
+        document.body.innerHTML = `
+            <div style="display:flex; height:100vh; background:#0f172a; align-items:center; justify-content:center; flex-direction:column; text-align:center;">
+                <h1 style="color:#ef4444; font-size:3rem; font-family:sans-serif; font-weight:bold; margin-bottom:1rem;">ERROR: LOCATION NOT FOUND</h1>
+                <p style="color:#94a3b8; font-size:1.5rem; font-family:sans-serif;">The Screen ID "${clientId}" is not registered in the Obsera Network.</p>
+            </div>`;
+        throw new Error("Client ID does not exist in clients.js");
+    }
+
+    document.getElementById('restaurant-name-display').innerText = clientData.name;
+
+    const MENU_SHEET_URL = `https://docs.google.com/spreadsheets/d/${clientData.menuSheetId}/export?format=csv&gid=0`;
+    const AD_SHEET_URL = `https://docs.google.com/spreadsheets/d/${clientData.adSheetId}/export?format=csv&gid=0`;
+
+    // --- GRAB DYNAMIC ITEMS PER SLIDE (Default 4) ---
+    const ITEMS_PER_SLIDE = parseInt(clientData.itemsPerSlide) || 4;       
+    const DEFAULT_MENU_DURATION = 8000; 
+    const CHECK_INTERVAL = 10000;    
+
+    let slideDeck = [];                
+    let currentSlideIndex = 0;       
+    let slideTimer = null;            
+    let isDataChanged = false;       
+    
+    let isAudioEnabled = false;
+    document.addEventListener('click', function() {
+        if (!isAudioEnabled) {
+            isAudioEnabled = true;
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume();
+        }
+    }, { once: true }); 
+
+    function isMobile() { return window.innerWidth < 600; }
+
+    function fetchMenuData() {
+        const uniqueMenuUrl = MENU_SHEET_URL + '&t=' + Date.now() + Math.random();
+        const uniqueAdUrl = AD_SHEET_URL + '&t=' + Date.now() + Math.random();
+
+        Promise.all([
+            fetch(uniqueMenuUrl, { cache: "no-store" }).then(r => r.ok ? r.text() : null).catch(() => null),
+            fetch(uniqueAdUrl, { cache: "no-store" }).then(r => r.ok ? r.text() : null).catch(() => null)
+        ])
+        .then(([menuCsv, adCsv]) => {
+            let combinedData = { menuRows: [], adRows: [] };
+
+            if (menuCsv) {
+                Papa.parse(menuCsv, {
+                    header: true, skipEmptyLines: true,
+                    complete: function(results) { combinedData.menuRows = results.data; }
+                });
+            }
+
+            if (adCsv) {
+                Papa.parse(adCsv, {
+                    header: true, skipEmptyLines: true,
+                    complete: function(results) { combinedData.adRows = results.data; }
+                });
+            }
+
+            setTimeout(() => { processData(combinedData); }, 100);
+        })
+        .catch(e => console.error("Error fetching sheets:", e));
+    }
+
+    function processData(combinedData) {
+        let menuGroups = {};
+        let adList = [];
+        let tickerMessage = "★ FOR ADVERTISING THIS SCREEN ★ CONTACT OBSERA SOLUTIONS ★ obserasolutions.site ★ WHATSAPP- +91 9562551376";
+
+        combinedData.menuRows.forEach(row => {
+            let safeRow = {};
+            Object.keys(row).forEach(k => safeRow[k.toLowerCase().trim()] = row[k]);
+
+            if (safeRow.name && safeRow.name.toUpperCase() === "TICKER") {
+                let msg = safeRow.desc || safeRow.description || "";
+                if (msg.length > 0) tickerMessage = msg;
+                return; 
+            }
+
+            let cat = safeRow.category ? safeRow.category.trim().toUpperCase() : "OUR MENU";
+            
+            if (safeRow.name && cat !== "ADVERTISEMENT") {
+                if (!menuGroups[cat]) menuGroups[cat] = [];
+                menuGroups[cat].push({
+                    name: safeRow.name,
+                    price: safeRow.price,
+                    desc: safeRow.desc || safeRow.description || "",
+                    image: safeRow.image
+                });
+            }
+        });
+
+        combinedData.adRows.forEach(row => {
+            let safeRow = {};
+            Object.keys(row).forEach(k => safeRow[k.toLowerCase().trim()] = row[k]);
+            
+            let cat = safeRow.category ? safeRow.category.trim().toUpperCase() : "";
+            
+            if (cat === "ADVERTISEMENT" || cat === "AD") {
+                if (safeRow.image) {
+                    const isVideo = safeRow.image.match(/\.(mp4|webm|ogg)$/i);
+                    const desc = (safeRow.desc || safeRow.description || "").toUpperCase();
+                    const wantsSound = desc.includes("SOUND");
+                    let pos = parseInt(safeRow.position);
+
+                    adList.push({
+                        type: isVideo ? 'video' : 'image',
+                        image: safeRow.image,
+                        duration: safeRow.price ? parseInt(safeRow.price) * 1000 : 10000,
+                        hasAudio: wantsSound,
+                        position: isNaN(pos) ? null : pos
+                    });
+                }
+            }
+        });
+
+        const tickerElement = document.getElementById('ticker-text');
+        if (tickerElement) {
+             tickerElement.innerText = tickerMessage;
+             setTimeout(adjustTickerSpeed, 300); 
+        }
+
+        let newDeck = [];
+        let currentCategoryNumber = 1;
+        const categories = Object.keys(menuGroups);
+        
+        categories.forEach((categoryName) => {
+            const items = menuGroups[categoryName];
+            const totalPages = Math.ceil(items.length / ITEMS_PER_SLIDE);
+            
+            for(let i=0; i < totalPages; i++) {
+                const start = i * ITEMS_PER_SLIDE;
+                const end = start + ITEMS_PER_SLIDE;
+                newDeck.push({
+                    type: 'menu',
+                    title: categoryName, 
+                    items: items.slice(start, end),
+                    duration: DEFAULT_MENU_DURATION
+                });
+            }
+
+            const adsForThisPosition = adList.filter(ad => ad.position === currentCategoryNumber);
+            
+            adsForThisPosition.forEach(adToShow => {
+                newDeck.push({
+                    type: 'ad',
+                    mediaType: adToShow.type,
+                    title: 'ADVERTISEMENT',
+                    image: adToShow.image,
+                    duration: adToShow.duration,
+                    hasAudio: adToShow.hasAudio 
+                });
+            });
+
+            currentCategoryNumber++;
+        });
+
+        const unplacedAds = adList.filter(ad => !ad.position || ad.position > categories.length);
+        unplacedAds.forEach(adToShow => {
+            newDeck.push({
+                type: 'ad',
+                mediaType: adToShow.type,
+                title: 'ADVERTISEMENT',
+                image: adToShow.image,
+                duration: adToShow.duration,
+                hasAudio: adToShow.hasAudio 
+            });
+        });
+
+        if (categories.length === 0 && adList.length > 0) {
+             adList.forEach(ad => {
+                 newDeck.push({ 
+                    type: 'ad', 
+                    mediaType: ad.type,
+                    image: ad.image, 
+                    duration: ad.duration,
+                    hasAudio: ad.hasAudio
+                });
+            });
+        }
+
+        if (slideDeck.length === 0) {
+            slideDeck = newDeck;
+            startCorrectView();
+        } else {
+            if (JSON.stringify(slideDeck) !== JSON.stringify(newDeck)) {
+                slideDeck = newDeck;
+                if(isMobile()) renderMobileView(); 
+            }
+        }
+    }
+
+    function startCorrectView() {
+        if(isMobile()) renderMobileView();
+        else if(!slideTimer) initSlideshow();
+    }
+
+    function renderMobileView() {
+        if(slideTimer) clearTimeout(slideTimer);
+        const container = document.getElementById('menu-container');
+        const titleElement = document.getElementById('menu-title');
+        
+        container.className = "flex flex-col gap-4 overflow-y-auto pb-20";
+        container.innerHTML = '';
+        titleElement.innerText = "FULL MENU"; 
+
+        if (slideDeck.length === 0) return;
+
+        slideDeck.forEach(page => {
+            if(page.type === 'ad') return; 
+
+            page.items.forEach(item => {
+                const fallbackImage = 'https://placehold.co/600x400/333/FFF?text=No+Image';
+                const nameText = item.name.toUpperCase();
+                const descText = item.desc || "";
+
+                let nameSize = "text-lg";
+                if (nameText.length > 25) nameSize = "text-base";
+                if (nameText.length > 40) nameSize = "text-sm";
+
+                let descSize = "text-sm";
+                if (descText.length > 60) descSize = "text-xs";
+                if (descText.length > 100) descSize = "text-[10px]";
+
+                container.innerHTML += `
+                    <div class="flex bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-md min-h-[120px] fade-in relative">
+                        <span class="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-bold px-2 py-1 z-10 rounded-br-lg shadow-sm">${page.title}</span>
+                        <div class="w-1/3 bg-gray-700 relative shrink-0">
+                            <img src="${item.image}" class="h-full w-full object-cover absolute inset-0" onerror="this.src='${fallbackImage}'">
+                        </div>
+                        <div class="w-2/3 p-3 flex flex-col justify-center overflow-hidden">
+                            <div class="flex justify-between items-start mb-1 gap-2 mt-4">
+                                <h3 class="${nameSize} font-bold text-yellow-500 font-heading leading-tight line-clamp-2" style="word-break: break-word;">${nameText}</h3>
+                                <span class="hidden bg-gray-900 border border-gray-600 text-white px-2 py-0.5 rounded text-sm font-bold whitespace-nowrap shrink-0">${item.price}</span>
+                            </div>
+                            <p class="text-gray-300 ${descSize} leading-snug line-clamp-3" style="word-break: break-word;">${descText}</p>
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+
+    function initSlideshow() {
+        currentSlideIndex = 0;
+        showSlide(0); 
+    }
+
+    function nextSlide() {
+        currentSlideIndex++;
+        if (currentSlideIndex >= slideDeck.length) {
+            window.location.reload(true);
+            return; 
+        } 
+        showSlide(currentSlideIndex);
+    }
+
+    function showSlide(index) {
+        if(!slideDeck[index]) return;
+
+        const slide = slideDeck[index];
+        const container = document.getElementById('menu-container');
+        const titleElement = document.getElementById('menu-title');
+        const header = document.getElementById('main-header');
+        const footer = document.getElementById('main-footer');
+
+        if(slideTimer) clearTimeout(slideTimer);
+        container.innerHTML = ''; 
+
+        if (slide.type === 'ad') {
+            header.style.transform = "translateY(-100%)"; 
+            footer.style.transform = "translateY(100%)";
+            container.className = "fixed inset-0 w-screen h-screen bg-black flex items-center justify-center z-50 fade-in";
+            
+            if (slide.mediaType === 'video') {
+                const shouldPlaySound = isAudioEnabled && slide.hasAudio;
+                
+                container.innerHTML = `<video id="ad-video-player" src="${slide.image}" class="w-full h-full object-contain" autoplay playsinline muted></video>`;
+                
+                const videoElement = document.getElementById('ad-video-player');
+                if (shouldPlaySound) videoElement.muted = false;
+
+                const playPromise = videoElement.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        videoElement.muted = true;
+                        videoElement.play();
+                    });
+                }
+
+                videoElement.onended = function() { nextSlide(); };
+                videoElement.onerror = function() { nextSlide(); };
+                return; 
+            } else {
+                container.innerHTML = `<img src="${slide.image}" class="w-full h-full object-contain" alt="Advertisement">`;
+                slideTimer = setTimeout(nextSlide, slide.duration);
+                return;
+            }
+        } 
+        else {
+            header.style.transform = "translateY(0)"; 
+            footer.style.transform = "translateY(0)";
+            titleElement.innerText = slide.title;
+
+            // --- THE FIX: DYNAMIC AUTO-ALIGN GRID ---
+            // Calculate grid layout based on EXACTLY how many items are on this slide right now!
+            const actualItemCount = slide.items.length;
+            let gridLayout = ""; 
+            
+            if (actualItemCount <= 2) gridLayout = "grid-cols-2 grid-rows-1"; // Fits up to 2 items
+            else if (actualItemCount <= 4) gridLayout = "grid-cols-2 grid-rows-2"; // Fits up to 4 items perfectly
+            else if (actualItemCount <= 6) gridLayout = "grid-cols-2 grid-rows-3"; // Fits up to 6 items
+            else if (actualItemCount <= 8) gridLayout = "grid-cols-2 grid-rows-4"; // Fits up to 8 items
+            else gridLayout = "grid-cols-3 grid-rows-3"; 
+
+            container.className = `grid ${gridLayout} gap-4 lg:gap-6 h-full w-full pt-4 relative z-0`;
+
+            slide.items.forEach(item => {
+                const fallbackImage = 'https://placehold.co/600x400/333/FFF?text=No+Image';
+                const nameText = item.name.toUpperCase();
+                const descText = item.desc || "";
+
+                let nameSize = "";
+                let descSize = "";
+
+                // --- SIZES FOR 6-8 ITEM GRIDS ---
+                if (actualItemCount > 4) {
+                    if (nameText.length > 35) nameSize = "text-2xl lg:text-3xl";
+                    else if (nameText.length > 20) nameSize = "text-3xl lg:text-4xl";
+                    else if (nameText.length > 12) nameSize = "text-4xl lg:text-5xl";
+                    else nameSize = "text-5xl lg:text-6xl";
+
+                    if (descText.length > 80) descSize = "text-base lg:text-lg";
+                    else if (descText.length > 40) descSize = "text-lg lg:text-xl";
+                    else descSize = "text-xl lg:text-2xl"; 
+                } 
+                // --- SIZES FOR 2-4 ITEM GRIDS ---
+                else {
+                    if (nameText.length > 35) nameSize = "text-3xl lg:text-4xl";
+                    else if (nameText.length > 22) nameSize = "text-4xl lg:text-5xl";
+                    else if (nameText.length > 14) nameSize = "text-5xl lg:text-6xl"; 
+                    else nameSize = "text-6xl lg:text-7xl"; 
+
+                    if (descText.length > 100) descSize = "text-lg lg:text-xl";
+                    else if (descText.length > 50) descSize = "text-xl lg:text-2xl";
+                    else descSize = "text-2xl lg:text-3xl";
+                }
+
+                container.innerHTML += `
+                    <div class="flex bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-xl fade-in h-full w-full">
+                        <div class="w-5/12 bg-gray-700 relative shrink-0">
+                            <img src="${item.image}" class="h-full w-full object-cover absolute inset-0" onerror="this.src='${fallbackImage}'">
+                        </div>
+                        <div class="w-7/12 p-4 lg:p-6 flex flex-col justify-center overflow-hidden">
+                            <div class="flex justify-between items-start mb-2 gap-3">
+                                <h3 class="${nameSize} font-bold text-yellow-500 font-heading leading-none line-clamp-2" style="word-break: break-word;">${nameText}</h3>
+                                <span class="hidden bg-red-600 text-white px-4 py-1.5 rounded-lg text-xl lg:text-2xl font-bold whitespace-nowrap shadow-sm shrink-0">${item.price}</span>
+                            </div>
+                            <p class="text-gray-300 ${descSize} leading-snug line-clamp-3 lg:line-clamp-4 mt-2" style="word-break: break-word;">${descText}</p>
+                        </div>
+                    </div>`;
+            });
+            
+            let nextDuration = slide.duration || 8000;
+            slideTimer = setTimeout(nextSlide, nextDuration);
+        }
+    }
+
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' ,second: "2-digit"});
+    }
+    
+    function adjustTickerSpeed() {
+        const ticker = document.getElementById('ticker-text');
+        if (!ticker) return;
+        const textWidth = ticker.offsetWidth;
+        const screenWidth = window.innerWidth;
+        const duration = (screenWidth + textWidth) / 150; 
+        ticker.style.animationDuration = `${duration}s`;
+    }
+
+    window.addEventListener('resize', () => { startCorrectView(); adjustTickerSpeed(); });
+    fetchMenuData(); 
+    setInterval(updateClock, 1000); 
+    setInterval(fetchMenuData, CHECK_INTERVAL); 
+
+    setTimeout(() => {
+        if(!isMobile() && !slideTimer && slideDeck.length > 0) initSlideshow();
+    }, 3000);
+
+</script>
+</body>
+</html>
